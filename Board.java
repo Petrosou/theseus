@@ -13,15 +13,11 @@ public class Board {
 	
 	//c-tors
 	public Board(){
-		N = 1;
+		N = 0;
 		S = 0;
 		W = 0;
-		
-		tiles = new Tile[N*N];
-		for(int i = 0; i <= N * N - 1; i++)
-			tiles[i] = new Tile(i, i/N, i%N, false, false, false, false);
-		
-		supplies = new Supply[S];
+		tiles = new Tile[0];
+		supplies = new Supply[0];
 	}	
 	
 	public Board(int N, int S, int W){
