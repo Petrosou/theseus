@@ -4,12 +4,12 @@
 */
 
 public class Player {
-	private int playerId;
-	private String name;
-	private Board board;
-	private int score;
-	private int x;
-	private int y;
+	protected int playerId;
+	protected String name;
+	protected Board board;
+	protected int score;
+	protected int x;
+	protected int y;
 	
 	
 	public Player() {
