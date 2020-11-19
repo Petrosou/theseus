@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 class HeuristicPlayer extends Player{
     private ArrayList<Integer[]> path;      //player moves [int die, int pickedSupply, int supplyId, int blocksToSupply int blocksToOpponent]
+    private final int ability = 3;
 
     HeuristicPlayer(){
         super();
@@ -11,16 +12,124 @@ class HeuristicPlayer extends Player{
         super(playerId, name, board, score, x, y);
         this.path = path;
     }
-    double evaluate(int currentPos, int die){return 0;}
+
+    double evaluate(int currentPos, int opponentPos, int die){
+        int blocksToOpponent = Integer.MAX_VALUE, blocksToSupply = Integer.MAX_VALUE;
+        switch(die) {
+            case 0: //case UP
+                for(int i = 0; i<ability; ++i){
+                    //Interfering wall
+                    if(board.getTiles()[currentPos + i*board.getN()].getUp()) {
+                        break;
+                    }
+                    
+                    //Opponent
+                    if(opponentPos == currentPos + i*board.getN()){
+                        blocksToOpponent = i + 1;
+                    }
+
+                    //Supply
+                    for(int j = 0;  j< board.getS(); ++j) 
+                        if(currentPos + i*board.getN() == board.getSupplies()[j].getSupplyTileId() && board.getSupplies()[j].isObtainable() && blocksToSupply != Integer.MAX_VALUE)
+                            blocksToSupply = i + 1;
+
+                    //Enough data collected
+                    if(blocksToOpponent != Integer.MAX_VALUE && blocksToSupply != Integer.MAX_VALUE)
+                        break;
+                }
+                break;
+            case 1: //case RIGHT
+                for(int i = 0; i<ability; ++i){
+                    //Interfering wall
+                    if(board.getTiles()[currentPos + i].getUp()) {
+                        break;
+                    }
+                    
+                    //Opponent
+                    if(opponentPos == currentPos + i){
+                        blocksToOpponent = i + 1;
+                    }
+
+                    //Supply
+                    for(int j = 0;  j< board.getS(); ++j) 
+                        if(currentPos + i == board.getSupplies()[j].getSupplyTileId() && board.getSupplies()[j].isObtainable() && blocksToSupply != Integer.MAX_VALUE)
+                            blocksToSupply = i + 1;
+
+                    //Enough data collected
+                    if(blocksToOpponent != Integer.MAX_VALUE && blocksToSupply != Integer.MAX_VALUE)
+                        break;
+                }
+                break;
+            case 2: //case DOWN
+                for(int i = 0; i<ability; ++i){
+                    //Interfering wall
+                    if(board.getTiles()[currentPos - i*board.getN()].getUp()) {
+                        break;
+                    }
+                    
+                    //Opponent
+                    if(opponentPos == currentPos - i*board.getN()){
+                        blocksToOpponent = i + 1;
+                    }
+
+                    //Supply
+                    for(int j = 0;  j<board.getS(); ++j) 
+                        if(currentPos - i*board.getN() == board.getSupplies()[j].getSupplyTileId() && board.getSupplies()[j].isObtainable() && blocksToSupply != Integer.MAX_VALUE)
+                            blocksToSupply = i + 1;
+
+                    //Enough data collected
+                    if(blocksToOpponent != Integer.MAX_VALUE && blocksToSupply != Integer.MAX_VALUE)
+                        break;
+                }
+                break;
+            case 3: //case LEFT
+                for(int i = 0; i<ability; ++i){
+                    //Interfering wall
+                    if(board.getTiles()[currentPos + i*board.getN()].getUp()) {
+                        break;
+                    }
+                    
+                    //Opponent
+                    if(opponentPos == currentPos + i*board.getN()){
+                        blocksToOpponent = i + 1;
+                    }
+
+                    //Supply
+                    for(int j = 0;  j<board.getS(); ++j) 
+                        if(currentPos + i*board.getN() == board.getSupplies()[j].getSupplyTileId() && board.getSupplies()[j].isObtainable() && blocksToSupply != Integer.MAX_VALUE)
+                            blocksToSupply = i + 1;
+
+                    //Enough data collected
+                    if(blocksToOpponent != Integer.MAX_VALUE && blocksToSupply != Integer.MAX_VALUE)
+                        break;
+                }
+                break;
+            default:
+                System.out.println("Some unexpected error in evaluate().");
+                java.lang.System.exit(1);
+        }
+
+        //Special case MS
+        if(name.equals("Theseus") && blocksToOpponent == 1 && blocksToSupply == 1){
+            if(score == board.getS() - 1){
+                return Double.POSITIVE_INFINITY;
+            }
+            return Double.NEGATIVE_INFINITY;
+        }
+        if(name.equals("Theseus"))
+            return 1.0/(blocksToSupply - 1) - 1.0/((blocksToOpponent - 1)*(blocksToOpponent - 1));
+
+        return 1.0/(blocksToSupply - 1) + 1.0/((blocksToOpponent - 1)*(blocksToOpponent - 1));
+    }
 
     //returns the move that has the greatest value
-    int getNextMove(int currentPos){
+    int getNextMove(int currentPos, int opponentPos){
         double[] movesValues = new double[4];
 
-        double maxValue = movesValues[0] = evaluate(currentPos, 1);
+        double maxValue = movesValues[0] = evaluate(currentPos, opponentPos, 1);
         int maxValueDie = 1;
         for(int i = 1; i<4; ++i)
-            if(maxValue < (movesValues[i] = evaluate(currentPos, 2*i + 1))){
+            if(maxValue < (movesValues[i] = evaluate(currentPos, opponentPos, 2*i + 1))){
                 maxValue = movesValues[i];
                 maxValueDie = 2*i + 1;
             }
