@@ -1,17 +1,28 @@
 import java.util.ArrayList;
 class HeuristicPlayer extends Player{
     private ArrayList<Integer[]> path;      //player moves' description [int die, int pickedSupply, int blocksToSupply, int blocksToOpponent]
-    private int ability = 3;
+    private int ability;
 
     HeuristicPlayer(){
         super();
         path = new ArrayList<>(0);
+        ability = 3;
     }
 
-    HeuristicPlayer(int playerId, String name, Board board, int score, int x, int y, ArrayList<Integer[]> path){
+    HeuristicPlayer(int playerId, String name, Board board, int score, int x, int y, ArrayList<Integer[]> path, int ability){
         super(playerId, name, board, score, x, y);
         this.path = path;
+        this.ability = ability;
     }
+
+    public void setAbility(int ability){
+        this.ability = ability;
+    }
+
+    public int getAbility(){
+        return ability;
+    }
+
     int[] seeAround(int currentPos, int opponentPos, int die){
         int blocksToOpponent = Integer.MAX_VALUE, blocksToSupply = Integer.MAX_VALUE;
         switch(die) {
@@ -192,10 +203,10 @@ class HeuristicPlayer extends Player{
             
             System.out.println();
         }
-        System.out.println(name + " moved up a total of " + ups + " times.");
-        System.out.println(name + " moved right a total of " + rights + " times.");
-        System.out.println(name + " moved down a total of " + downs + " times.");
-        System.out.println(name + " moved left a total of " + lefts + " times.");
+        System.out.println(name + " tried to moved up a total of " + ups + " times.");
+        System.out.println(name + " tried to moved right a total of " + rights + " times.");
+        System.out.println(name + " tried to moved down a total of " + downs + " times.");
+        System.out.println(name + " tried to moved left a total of " + lefts + " times.");
 
     }
 
