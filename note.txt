@@ -18,10 +18,11 @@ f(d1,d2) = α/(απόσταση από supply) +- β/(απόσταση από α
 	d1 != 0 && d2 != 0
 	f(d1, d2) = a/d1 - b/d2
 
-f = 1/(d1-1) +- 1/(d2-1)^2    (currentPos)
+f = 0.5/(d1-1) +- 1/(d2-1)    (currentPos)
 
 
 
 
 Επιπλέον όρισμα στην evaluate() και στην getNextMove(): opponentPos
 Επιπλέον instance field στην Heuristic: int ability
+HeuristicPlayer overloads move().

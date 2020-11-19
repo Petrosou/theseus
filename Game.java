@@ -1,7 +1,9 @@
+import java.util.ArrayList;
+
 /**
-Σουλίδης Πέτρος 9971 petrosis@ece.auth.gr
-Τερζίδης Αλέξανδρος 10072 terzidisa@ece.auth.gr
-*/
+ * Σουλίδης Πέτρος 9971 petrosis@ece.auth.gr Τερζίδης Αλέξανδρος 10072
+ * terzidisa@ece.auth.gr
+ */
 
 public class Game {
 	private int round;
@@ -27,12 +29,12 @@ public class Game {
 	
 	public static void main(String[] args) {
 		Game game = new Game();
-		int N = 15, S = 4, W = 100 + (int)(Math.random()*61), n = 100;
+		int N = 15, S = 4, W = 100 + (int)(Math.random()*6), n = 100;
 		Board board = new Board(N, S, W);
 		board.createBoard();
-		Player[] gamers = new Player[2];
-		gamers[0] = new Player(1, "Theseus", board, 0, 0, 0);
-		gamers[1] = new Player(2, "Minotaur", board, 0, N/2, N/2);
+		HeuristicPlayer[] gamers = new HeuristicPlayer[2];
+		gamers[0] = new HeuristicPlayer(1, "Theseus", board, 0, 0, 0, new ArrayList<>(0));
+		gamers[1] = new HeuristicPlayer(2, "Minotaur", board, 0, N/2, N/2,  new ArrayList<>(0));
 		int winnerIdx = 0;
 		do{
 			System.out.println("\n\n");
@@ -54,7 +56,7 @@ public class Game {
 			//Theseus' turn
 			
 			//Check if a supply was collected
-			if(gamers[0].move(N * gamers[0].getX() + gamers[0].getY())[3] != -1){
+			if(gamers[0].move(N * gamers[1].getX() + gamers[1].getY())[3] != -1){
 				gamers[0].setScore(gamers[0].getScore() + 1);
 			}
 
@@ -71,7 +73,7 @@ public class Game {
 			}
 			
 			//Minotaur's turn
-			gamers[1].move(N * gamers[1].getX() + gamers[1].getY());
+			gamers[1].move(N * gamers[0].getX() + gamers[0].getY());
 
 			//Check if Minotaur ran into Theseus
 			if(gamers[0].getX() == gamers[1].getX() && gamers[0].getY() == gamers[1].getY()) {
@@ -81,6 +83,8 @@ public class Game {
 			}	
 		}while(game.getRound() < n);		//n rounds -> 2n plays
 		
+		gamers[0].statistics();
+
 		//Tie
 		if(game.getRound() == n) {
 			System.out.println("Out of moves! (Tie)");

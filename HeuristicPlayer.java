@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 class HeuristicPlayer extends Player{
-    private ArrayList<Integer[]> path;      //player moves [int die, int pickedSupply, int supplyId, int blocksToSupply int blocksToOpponent]
-    private final int ability = 3;
+    private ArrayList<Integer[]> path;      //player moves' description [int die, int pickedSupply, int blocksToSupply, int blocksToOpponent]
+    private int ability = 3;
 
     HeuristicPlayer(){
         super();
@@ -12,11 +12,10 @@ class HeuristicPlayer extends Player{
         super(playerId, name, board, score, x, y);
         this.path = path;
     }
-
-    double evaluate(int currentPos, int opponentPos, int die){
+    int[] seeAround(int currentPos, int opponentPos, int die){
         int blocksToOpponent = Integer.MAX_VALUE, blocksToSupply = Integer.MAX_VALUE;
         switch(die) {
-            case 0: //case UP
+            case 1: //case UP
                 for(int i = 0; i<ability; ++i){
                     //Interfering wall
                     if(board.getTiles()[currentPos + i*board.getN()].getUp()) {
@@ -24,13 +23,13 @@ class HeuristicPlayer extends Player{
                     }
                     
                     //Opponent
-                    if(opponentPos == currentPos + i*board.getN()){
+                    if(opponentPos == currentPos + (i+1)*board.getN()){
                         blocksToOpponent = i + 1;
                     }
 
                     //Supply
                     for(int j = 0;  j< board.getS(); ++j) 
-                        if(currentPos + i*board.getN() == board.getSupplies()[j].getSupplyTileId() && board.getSupplies()[j].isObtainable() && blocksToSupply != Integer.MAX_VALUE)
+                        if(currentPos + (i + 1)*board.getN() == board.getSupplies()[j].getSupplyTileId() && board.getSupplies()[j].isObtainable() && blocksToSupply == Integer.MAX_VALUE)
                             blocksToSupply = i + 1;
 
                     //Enough data collected
@@ -38,21 +37,21 @@ class HeuristicPlayer extends Player{
                         break;
                 }
                 break;
-            case 1: //case RIGHT
+            case 3: //case RIGHT
                 for(int i = 0; i<ability; ++i){
                     //Interfering wall
-                    if(board.getTiles()[currentPos + i].getUp()) {
+                    if(board.getTiles()[currentPos + i].getRight()) {
                         break;
                     }
                     
                     //Opponent
-                    if(opponentPos == currentPos + i){
+                    if(opponentPos == currentPos + i + 1){
                         blocksToOpponent = i + 1;
                     }
 
                     //Supply
                     for(int j = 0;  j< board.getS(); ++j) 
-                        if(currentPos + i == board.getSupplies()[j].getSupplyTileId() && board.getSupplies()[j].isObtainable() && blocksToSupply != Integer.MAX_VALUE)
+                        if(currentPos + i + 1 == board.getSupplies()[j].getSupplyTileId() && board.getSupplies()[j].isObtainable() && blocksToSupply == Integer.MAX_VALUE)
                             blocksToSupply = i + 1;
 
                     //Enough data collected
@@ -60,43 +59,43 @@ class HeuristicPlayer extends Player{
                         break;
                 }
                 break;
-            case 2: //case DOWN
+            case 5: //case DOWN
                 for(int i = 0; i<ability; ++i){
                     //Interfering wall
-                    if(board.getTiles()[currentPos - i*board.getN()].getUp()) {
+                    if(board.getTiles()[currentPos - i*board.getN()].getDown()) {
                         break;
                     }
                     
                     //Opponent
-                    if(opponentPos == currentPos - i*board.getN()){
-                        blocksToOpponent = i + 1;
+                    if(opponentPos == currentPos - (i+1)*board.getN()){
+                        blocksToOpponent = i+1;
                     }
 
                     //Supply
                     for(int j = 0;  j<board.getS(); ++j) 
-                        if(currentPos - i*board.getN() == board.getSupplies()[j].getSupplyTileId() && board.getSupplies()[j].isObtainable() && blocksToSupply != Integer.MAX_VALUE)
-                            blocksToSupply = i + 1;
+                        if(currentPos - (i+1)*board.getN() == board.getSupplies()[j].getSupplyTileId() && board.getSupplies()[j].isObtainable() && blocksToSupply == Integer.MAX_VALUE)
+                            blocksToSupply = i+1;
 
                     //Enough data collected
                     if(blocksToOpponent != Integer.MAX_VALUE && blocksToSupply != Integer.MAX_VALUE)
                         break;
                 }
                 break;
-            case 3: //case LEFT
+            case 7: //case LEFT
                 for(int i = 0; i<ability; ++i){
                     //Interfering wall
-                    if(board.getTiles()[currentPos + i*board.getN()].getUp()) {
+                    if(board.getTiles()[currentPos - i].getLeft()) {
                         break;
                     }
                     
                     //Opponent
-                    if(opponentPos == currentPos + i*board.getN()){
+                    if(opponentPos == currentPos - i - 1){
                         blocksToOpponent = i + 1;
                     }
 
                     //Supply
                     for(int j = 0;  j<board.getS(); ++j) 
-                        if(currentPos + i*board.getN() == board.getSupplies()[j].getSupplyTileId() && board.getSupplies()[j].isObtainable() && blocksToSupply != Integer.MAX_VALUE)
+                        if(currentPos - i - 1== board.getSupplies()[j].getSupplyTileId() && board.getSupplies()[j].isObtainable() && blocksToSupply == Integer.MAX_VALUE)
                             blocksToSupply = i + 1;
 
                     //Enough data collected
@@ -105,10 +104,17 @@ class HeuristicPlayer extends Player{
                 }
                 break;
             default:
-                System.out.println("Some unexpected error in evaluate().");
+                System.out.println(die + " Some unexpected error in seeAround().");
                 java.lang.System.exit(1);
         }
-
+        int[] tempArray = {blocksToSupply, blocksToOpponent};
+        return tempArray;
+    }
+    
+    double evaluate(int currentPos, int opponentPos, int die){
+        int[] observation = seeAround(currentPos, opponentPos, die);
+        int blocksToSupply = observation[0];
+        int blocksToOpponent = observation[1];
         //Special case MS
         if(name.equals("Theseus") && blocksToOpponent == 1 && blocksToSupply == 1){
             if(score == board.getS() - 1){
@@ -117,24 +123,28 @@ class HeuristicPlayer extends Player{
             return Double.NEGATIVE_INFINITY;
         }
         if(name.equals("Theseus"))
-            return 1.0/(blocksToSupply - 1) - 1.0/((blocksToOpponent - 1)*(blocksToOpponent - 1));
+            return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1);
 
-        return 1.0/(blocksToSupply - 1) + 1.0/((blocksToOpponent - 1)*(blocksToOpponent - 1));
+        return 0.5/(blocksToSupply - 1) + 1.0/(blocksToOpponent - 1);
     }
-
+    
     //returns the move that has the greatest value
     int getNextMove(int currentPos, int opponentPos){
         double[] movesValues = new double[4];
-
-        double maxValue = movesValues[0] = evaluate(currentPos, opponentPos, 1);
-        int maxValueDie = 1;
-        for(int i = 1; i<4; ++i)
+        int randomDirection = 1 + 2 * ((int) (Math.random() * 10) % 4);
+        double maxValue = movesValues[0] = evaluate(currentPos, opponentPos, randomDirection);
+        int maxValueDie = randomDirection;
+        for(int i = 0; i<4; ++i)
             if(maxValue < (movesValues[i] = evaluate(currentPos, opponentPos, 2*i + 1))){
                 maxValue = movesValues[i];
                 maxValueDie = 2*i + 1;
             }
         
-        Integer[] tempArray = {maxValueDie, -1, -1, -1, -1};
+
+        int[] observation = seeAround(currentPos, opponentPos, maxValueDie);
+        Integer[] tempArray = {maxValueDie, 0, observation[0] - 1, observation[1] - 1};
+        if(name.equals("Theseus") && maxValue == Double.POSITIVE_INFINITY)
+                tempArray[1] = 1;
         path.add(tempArray);
         return maxValueDie;
     }
@@ -143,53 +153,53 @@ class HeuristicPlayer extends Player{
         int ups, rights, downs, lefts, currentRound;
         ups = rights = downs = lefts = 0;
         for(int i = 0; i<path.size(); ++i){
-            currentRound = i/2 + 1;
-            if(name.equals("Theseus")){
-                if(score == 0)
-                    System.out.println("Theseus hadn't collected any supplies in round " + currentRound + ".");
-                else if(score == 1)
-                    System.out.println("Theseus had collected one supply in round " + currentRound + ".");
-                else if(score > 1 && score < board.getS())
-                    System.out.println("Theseus had collected " + score + " supply in round " + currentRound + ".");
-                else if(score == board.getS())
-                    System.out.println("Theseus collected all supplies in round " + currentRound + ".");
-                else{
-                    System.out.println("Some unexpected error happened while printing the \"statistics\" of Theseus");
-                    java.lang.System.exit(1);
-                }
-            }
-            int blocksToSupply = path.get(i)[3];
-            switch(blocksToSupply){
-                case(0):
-                    System.out.println(name + "cannot see any supplies.");
-                    break;
-                case(1):
-                    System.out.println(name + "is next to a supply.");
-                    break;
-                case(2):
-                    System.out.println(name + "is two blocks away from a supply.");
-                    break;
-                default:
-                    System.out.println("Some unexpected error happened in HeuristicPlayer-> void statistics()-> switch(blocksToSupply)");
-                    java.lang.System.exit(1);
-            }
+            currentRound = i + 1;
             switch(path.get(i)[0]) {
                 case 1://case UP
+                    System.out.println(name + " moved up in round " + currentRound + ".");
                     ++ups;
                     break;
                 case 3://case RIGHT
-                    ++rights;
+                    System.out.println(name + " moved right in round " + currentRound + ".");
+                ++rights;
                     break;
                 case 5://Case DOWN
-                    ++downs;
+                    System.out.println(name + " moved down in round " + currentRound + ".");
+                ++downs;
                     break;
                 case 7://Case LEFT
-                    ++lefts;
+                    System.out.println(name + " moved left in round " + currentRound + ".");
+                ++lefts;
                     break;
                 default:
                     System.out.println("Some unexpected error happened in HeuristicPlayer-> void statistics()-> switch(path.get(i)[0])");
                     java.lang.System.exit(1);
             }
+            if(name.equals("Theseus")){
+                if(path.get(i)[1] == 0)
+                    System.out.println("Theseus didn't collect any supplies.");
+                else if(path.get(i)[1] == 1)
+                    System.out.println("Theseus collected one supply.");
+                else{
+                    System.out.println("Some unexpected error happened while printing the \"statistics\" of Theseus");
+                    java.lang.System.exit(1);
+                }
+            }
+            int blocksToSupply = path.get(i)[2];
+            switch(blocksToSupply){
+                case(1):
+                    System.out.println(name + " was next to a supply.");
+                    break;
+                case(2):
+                    System.out.println(name + " was two blocks away from a supply.");
+                    break;
+                case(3):
+                    System.out.println(name + " was three blocks away from a supply.");
+                    break;
+                default:
+                    System.out.println("Supplies were not visible.");
+            }
+            
         }
         System.out.println(name + " moved up a total of " + ups + " times.");
         System.out.println(name + " moved right a total of " + rights + " times.");
@@ -198,5 +208,119 @@ class HeuristicPlayer extends Player{
 
     }
 
-
+    public int[] move(int opponentId) {
+		int[] details = new int[4];
+		details[3] = -1;
+		int Direction = getNextMove(board.getN()*x+y, opponentId);
+		switch(Direction) {
+		case 1://case UP
+			System.out.println(name + " rolled UP.");
+			if(board.getTiles()[board.getN()*x+y].getUp()) {
+				System.out.println(name + " cannot move up.");
+				details[0] = board.getN()*x+y;
+				details[1] = board.getTiles()[board.getN()*x+y].getX();
+				details[2] = board.getTiles()[board.getN()*x+y].getY();
+				break;
+			}
+			details[0] = board.getN()*x+y + board.getN();
+			details[1] = board.getTiles()[details[0]].getX();
+			details[2] = board.getTiles()[details[0]].getY();
+			setX(details[1]);
+			setY(details[2]);
+			
+			if(getPlayerId() == 1) {
+				for(int i = 0 ; i < board.getS() ; i++) {
+					if((details[0] == board.getSupplies()[i].getSupplyTileId())&&(board.getSupplies()[i].isObtainable())) {
+						System.out.println(name + " picked up supply " + board.getSupplies()[i].getSupplyId() + ".");
+						details[3] = i;
+						board.getSupplies()[i].setObtainable(false);
+						break;
+					}
+				}
+			}		
+			break;
+		case 3://case RIGHT
+			System.out.println(name + " rolled RIGHT.");
+			if(board.getTiles()[board.getN()*x+y].getRight()) {
+				System.out.println(name + " cannot move right.");
+				details[0] = board.getN()*x+y;
+				details[1] = board.getTiles()[board.getN()*x+y].getX();
+				details[2] = board.getTiles()[board.getN()*x+y].getY();
+				break;
+			}
+			
+			details[0] = board.getN()*x+y + 1;
+			details[1] = board.getTiles()[details[0]].getX();
+			details[2] = board.getTiles()[details[0]].getY();
+			setX(details[1]);
+			setY(details[2]);
+			
+			if(getPlayerId() == 1) {
+				for(int i = 0 ; i < board.getS() ; i++) {
+					if((details[0] == board.getSupplies()[i].getSupplyTileId())&&(board.getSupplies()[i].isObtainable())) {
+						System.out.println(name + " picked up supply " + board.getSupplies()[i].getSupplyId() + ".");
+						details[3] = i;
+						board.getSupplies()[i].setObtainable(false);
+						break;
+					}
+				}
+			}
+			break;
+		case 5://Case DOWN
+			System.out.println(name + " rolled DOWN.");
+			if(board.getTiles()[board.getN()*x+y].getDown()) {
+				System.out.println(name + " cannot move down.");
+				details[0] = board.getN()*x+y;
+				details[1] = board.getTiles()[board.getN()*x+y].getX();
+				details[2] = board.getTiles()[board.getN()*x+y].getY();
+				break;
+			}
+			
+			details[0] = board.getN()*x+y - board.getN();
+			details[1] = board.getTiles()[details[0]].getX();
+			details[2] = board.getTiles()[details[0]].getY();
+			setX(details[1]);
+			setY(details[2]);
+			
+			if(getPlayerId() == 1) {
+				for(int i = 0 ; i < board.getS() ; i++) {
+					if(details[0] == board.getSupplies()[i].getSupplyTileId() && board.getSupplies()[i].isObtainable()) {
+						System.out.println(name + " picked up supply " + board.getSupplies()[i].getSupplyId() + ".");
+						details[3] = i;
+						board.getSupplies()[i].setObtainable(false);
+						break;
+					}
+				}
+			}
+			break;
+		case 7://Case LEFT
+			System.out.println(name + " rolled LEFT.");
+			if(board.getTiles()[board.getN()*x+y].getLeft()) {
+				System.out.println(name + " cannot move left.");
+				details[0] = board.getN()*x+y;
+				details[1] = board.getTiles()[board.getN()*x+y].getX();
+				details[2] = board.getTiles()[board.getN()*x+y].getY();
+				break;
+			}
+			
+			details[0] = board.getN()*x+y - 1;
+			details[1] = board.getTiles()[details[0]].getX();
+			details[2] = board.getTiles()[details[0]].getY();
+			setX(details[1]);
+			setY(details[2]);
+			
+			if(getPlayerId() == 1) {
+				for(int i = 0 ; i < board.getS() ; i++) {
+					if((details[0] == board.getSupplies()[i].getSupplyTileId())&&(board.getSupplies()[i].isObtainable())) {
+						System.out.println(name + " picked up supply " + board.getSupplies()[i].getSupplyId() + ".");
+						details[3] = i;
+						board.getSupplies()[i].setObtainable(false);
+						break;
+					}
+				}
+			}
+			break;
+		}
+		return details;
+	}
 }
