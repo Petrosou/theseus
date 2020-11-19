@@ -175,31 +175,22 @@ class HeuristicPlayer extends Player{
                     System.out.println("Some unexpected error happened in HeuristicPlayer-> void statistics()-> switch(path.get(i)[0])");
                     java.lang.System.exit(1);
             }
-            if(name.equals("Theseus")){
-                if(path.get(i)[1] == 0)
-                    System.out.println("Theseus didn't collect any supplies.");
-                else if(path.get(i)[1] == 1)
-                    System.out.println("Theseus collected one supply.");
-                else{
-                    System.out.println("Some unexpected error happened while printing the \"statistics\" of Theseus");
-                    java.lang.System.exit(1);
-                }
-            }
+
             int blocksToSupply = path.get(i)[2];
-            switch(blocksToSupply){
-                case(1):
-                    System.out.println(name + " was next to a supply.");
-                    break;
-                case(2):
-                    System.out.println(name + " was two blocks away from a supply.");
-                    break;
-                case(3):
-                    System.out.println(name + " was three blocks away from a supply.");
-                    break;
-                default:
-                    System.out.println("Supplies were not visible.");
+            if(blocksToSupply == 0){
+                if(name.equals("Theseus"))
+                    System.out.println("Theseus picked up a supply");
+                else
+                    System.out.println("Minotaur guards a supply");
             }
+            else if(blocksToSupply == 1)
+                System.out.println(name + " was " + blocksToSupply + " block away from a supply.");
+            else if(blocksToSupply <= ability)
+                System.out.println(name + " was " + blocksToSupply + " blocks away from a supply.");
+            else
+                System.out.println("Supplies were not visible.");
             
+            System.out.println();
         }
         System.out.println(name + " moved up a total of " + ups + " times.");
         System.out.println(name + " moved right a total of " + rights + " times.");
