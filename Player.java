@@ -166,7 +166,7 @@ public class Player {
 				}
 			}
 			break;
-		case 7://Case UP
+		case 7://Case LEFT
 			System.out.println(name + " rolled LEFT.");
 			if(board.getTiles()[id].getLeft()) {
 				System.out.println(name + " cannot move left.");
