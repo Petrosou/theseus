@@ -2,11 +2,13 @@ import java.util.ArrayList;
 class HeuristicPlayer extends Player{
     private ArrayList<Integer[]> path;      //player moves' description [int die, int pickedSupply, int blocksToSupply, int blocksToOpponent]
     private int ability;
+    private double chanceToFindTreasure;
 
     HeuristicPlayer(){
         super();
         path = new ArrayList<>(0);
         ability = 3;
+        chanceToFindTreasure = 0;
     }
 
     HeuristicPlayer(int playerId, String name, Board board, int score, int x, int y, ArrayList<Integer[]> path, int ability){
@@ -21,6 +23,14 @@ class HeuristicPlayer extends Player{
 
     public int getAbility(){
         return ability;
+    }
+
+    public void setChanceToFindTreasure(double chance){
+        chanceToFindTreasure = chance;
+    }
+
+    public double getChanceToFindTreasure(){
+        return chanceToFindTreasure;
     }
 
     int[] seeAround(int currentPos, int opponentPos, int die){
@@ -138,7 +148,7 @@ class HeuristicPlayer extends Player{
 
         return 0.5/(blocksToSupply - 1) + 1.0/(blocksToOpponent - 1);
     }
-    
+
     //returns the move that has the greatest value
     int getNextMove(int currentPos, int opponentPos){
         double[] movesValues = new double[4];
@@ -212,7 +222,7 @@ class HeuristicPlayer extends Player{
 
     public int[] move(int opponentId) {
 		int[] details = new int[4];
-		details[3] = -1;
+        details[3] = -1;
 		int Direction = getNextMove(board.getN()*x+y, opponentId);
 		switch(Direction) {
 		case 1://case UP
@@ -233,7 +243,11 @@ class HeuristicPlayer extends Player{
 			if(getPlayerId() == 1) {
 				for(int i = 0 ; i < board.getS() ; i++) {
 					if((details[0] == board.getSupplies()[i].getSupplyTileId())&&(board.getSupplies()[i].isObtainable())) {
-						System.out.println(name + " picked up supply " + board.getSupplies()[i].getSupplyId() + ".");
+                        System.out.println(name + " picked up supply " + board.getSupplies()[i].getSupplyId() + ".");
+                        if(chanceToFindTreasure > 0.5){
+                            ++ability;
+                            System.out.println("Theseus found an upgraded sword in the supply!");
+                        }
 						details[3] = i;
 						board.getSupplies()[i].setObtainable(false);
 						break;
@@ -261,6 +275,10 @@ class HeuristicPlayer extends Player{
 				for(int i = 0 ; i < board.getS() ; i++) {
 					if((details[0] == board.getSupplies()[i].getSupplyTileId())&&(board.getSupplies()[i].isObtainable())) {
 						System.out.println(name + " picked up supply " + board.getSupplies()[i].getSupplyId() + ".");
+                        if(chanceToFindTreasure > 0.5){
+                            ++ability;
+                            System.out.println("Theseus found an upgraded sword in the supply!");
+                        }
 						details[3] = i;
 						board.getSupplies()[i].setObtainable(false);
 						break;
@@ -288,6 +306,10 @@ class HeuristicPlayer extends Player{
 				for(int i = 0 ; i < board.getS() ; i++) {
 					if(details[0] == board.getSupplies()[i].getSupplyTileId() && board.getSupplies()[i].isObtainable()) {
 						System.out.println(name + " picked up supply " + board.getSupplies()[i].getSupplyId() + ".");
+                        if(chanceToFindTreasure > 0.5){
+                            ++ability;
+                            System.out.println("Theseus found an upgraded sword in the supply!");
+                        }
 						details[3] = i;
 						board.getSupplies()[i].setObtainable(false);
 						break;
@@ -315,6 +337,10 @@ class HeuristicPlayer extends Player{
 				for(int i = 0 ; i < board.getS() ; i++) {
 					if((details[0] == board.getSupplies()[i].getSupplyTileId())&&(board.getSupplies()[i].isObtainable())) {
 						System.out.println(name + " picked up supply " + board.getSupplies()[i].getSupplyId() + ".");
+                        if(chanceToFindTreasure > 0.5){
+                            ++ability;
+                            System.out.println("Theseus found an upgraded sword in the supply!");
+                        }
 						details[3] = i;
 						board.getSupplies()[i].setObtainable(false);
 						break;
