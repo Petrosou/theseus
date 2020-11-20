@@ -146,7 +146,7 @@ class HeuristicPlayer extends Player{
         if(name.equals("Theseus"))
             return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1);
 
-        return 0.5/(blocksToSupply - 1) + 1.0/(blocksToOpponent - 1);
+        return 0.5/(blocksToSupply) + 1.0/(blocksToOpponent - 1);       //there's not -1 so bloscksToOpponent is more important
     }
 
     //returns the move that has the greatest value
@@ -171,6 +171,7 @@ class HeuristicPlayer extends Player{
     }
 
     void statistics(){
+        System.out.println("\nStatistics of " + name + ":");
         int ups, rights, downs, lefts, currentRound;
         ups = rights = downs = lefts = 0;
         for(int i = 0; i<path.size(); ++i){

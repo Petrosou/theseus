@@ -29,12 +29,12 @@ public class Game {
 	
 	public static void main(String[] args) {
 		Game game = new Game();
-		int N = 7, S = 4, W = 10 + (int)(Math.random()*6), n = 100;
+		final int N = 7, S = 4, W = 10 + (int)(Math.random()*6), n = 100;
 		Board board = new Board(N, S, W);
 		board.createBoard();
 		HeuristicPlayer[] gamers = new HeuristicPlayer[2];
-		gamers[0] = new HeuristicPlayer(1, "Theseus", board, 0, 0, 0, new ArrayList<>(0), 3);
-		gamers[1] = new HeuristicPlayer(2, "Minotaur", board, 0, N/2, N/2,  new ArrayList<>(0), 3);
+		gamers[0] = new HeuristicPlayer(1, "Theseus", board, 0, 0, 0, new ArrayList<>(n), 3);
+		gamers[1] = new HeuristicPlayer(2, "Minotaur", board, 0, N/2, N/2,  new ArrayList<>(n), 3);
 		int winnerIdx = 0;
 		gamers[0].setChanceToFindTreasure(1);
 		do{
