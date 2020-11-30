@@ -33,7 +33,7 @@ class HeuristicPlayer extends Player{
         return chanceToFindTreasure;
     }
 
-    int[] seeAround(int currentPos, int opponentPos, int die){
+    private int[] seeAround(int currentPos, int opponentPos, int die){
         int blocksToOpponent = Integer.MAX_VALUE, blocksToSupply = Integer.MAX_VALUE;
         switch(die) {
             case 1: //case UP
@@ -132,7 +132,7 @@ class HeuristicPlayer extends Player{
         return tempArray;
     }
     
-    double evaluate(int currentPos, int opponentPos, int die){
+    private double evaluate(int currentPos, int opponentPos, int die){
         int[] observation = seeAround(currentPos, opponentPos, die);
         int blocksToSupply = observation[0];
         int blocksToOpponent = observation[1];
@@ -150,7 +150,7 @@ class HeuristicPlayer extends Player{
     }
 
     //returns the move that has the greatest value
-    int getNextMove(int currentPos, int opponentPos){
+    private int getNextMove(int currentPos, int opponentPos){
         double[] movesValues = new double[4];
         int randomDirection = 1 + 2 * ((int) (Math.random() * 10) % 4);
         double maxValue = movesValues[0] = evaluate(currentPos, opponentPos, randomDirection);
@@ -170,7 +170,7 @@ class HeuristicPlayer extends Player{
         return maxValueDie;
     }
 
-    void statistics(){
+    public void statistics(){
         System.out.println("\nStatistics of " + name + ":");
         int ups, rights, downs, lefts, currentRound;
         ups = rights = downs = lefts = 0;
