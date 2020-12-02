@@ -55,9 +55,11 @@ public class Game {
 			//Movements
 			
 			//Theseus' turn
-			
+
+			int die = gamers[0].getNextMove(N * gamers[0].getX() + gamers[0].getY(), N * gamers[1].getX() + gamers[1].getY());
+
 			//Check if a supply was collected
-			if(gamers[0].move(N * gamers[1].getX() + gamers[1].getY())[3] != -1){
+			if(gamers[0].move(die)[3] != -1){
 				gamers[0].setScore(gamers[0].getScore() + 1);
 			}
 
@@ -74,7 +76,8 @@ public class Game {
 			}
 			
 			//Minotaur's turn
-			gamers[1].move(N * gamers[0].getX() + gamers[0].getY());
+			die = gamers[1].getNextMove(N * gamers[1].getX() + gamers[1].getY(), N * gamers[0].getX() + gamers[0].getY());
+			gamers[1].move(die);
 
 			//Check if Minotaur ran into Theseus
 			if(gamers[0].getX() == gamers[1].getX() && gamers[0].getY() == gamers[1].getY()) {

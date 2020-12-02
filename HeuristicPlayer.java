@@ -132,7 +132,7 @@ class HeuristicPlayer extends Player{
         return tempArray;
     }
     
-    private double evaluate(int currentPos, int opponentPos, int die){
+    public double evaluate(int currentPos, int opponentPos, int die){
         int[] observation = seeAround(currentPos, opponentPos, die);
         int blocksToSupply = observation[0];
         int blocksToOpponent = observation[1];
@@ -150,7 +150,7 @@ class HeuristicPlayer extends Player{
     }
 
     //returns the move that has the greatest value
-    private int getNextMove(int currentPos, int opponentPos){
+    public int getNextMove(int currentPos, int opponentPos){
         double[] movesValues = new double[4];
         int randomDirection = 1 + 2 * ((int) (Math.random() * 10) % 4);
         double maxValue = movesValues[0] = evaluate(currentPos, opponentPos, randomDirection);
@@ -221,11 +221,10 @@ class HeuristicPlayer extends Player{
 
     }
 
-    public int[] move(int opponentId) {
+    public int[] move(int die) {
 		int[] details = new int[4];
         details[3] = -1;
-		int Direction = getNextMove(board.getN()*x+y, opponentId);
-		switch(Direction) {
+		switch(die) {
 		case 1://case UP
 			System.out.println(name + " rolled UP.");
 			if(board.getTiles()[board.getN()*x+y].getUp()) {
