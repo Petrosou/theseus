@@ -35,7 +35,7 @@ public class Game {
 		HeuristicPlayer[] gamers = new HeuristicPlayer[2];
 		gamers[0] = new HeuristicPlayer(1, "Theseus", board, 0, 0, 0, new ArrayList<>(n), 3);
 		gamers[1] = new HeuristicPlayer(2, "Minotaur", board, 0, N/2, N/2,  new ArrayList<>(n), 3);
-		int winnerIdx = 0;
+		int winnerIdx = -1;
 		gamers[0].setChanceToFindTreasure(1);
 		do{
 			System.out.println("\n\n");
@@ -63,12 +63,12 @@ public class Game {
 
 			//Check if all supplies were collected
 			if(gamers[0].getScore() == board.getS()){
+				winnerIdx = 1;
 				break;
 			}
 			
 			//Check if Theseus ran into Minotaur
 			if(gamers[0].getX() == gamers[1].getX() && gamers[0].getY()==gamers[1].getY()) {
-				gamers[1].setScore(gamers[1].getScore() + 1);
 				winnerIdx = 1;
 				break;
 			}
@@ -78,7 +78,6 @@ public class Game {
 
 			//Check if Minotaur ran into Theseus
 			if(gamers[0].getX() == gamers[1].getX() && gamers[0].getY() == gamers[1].getY()) {
-				gamers[1].setScore(gamers[1].getScore() + 1);
 				winnerIdx = 1;
 				break;
 			}	
@@ -87,7 +86,7 @@ public class Game {
 		gamers[0].statistics();
 
 		//Tie
-		if(game.getRound() == n) {
+		if(game.getRound() == n && winnerIdx == -1) {
 			System.out.println("Out of moves! (Tie)");
 		}
 
