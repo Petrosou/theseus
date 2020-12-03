@@ -143,6 +143,15 @@ class HeuristicPlayer extends Player{
             }
             return Double.NEGATIVE_INFINITY;
         }
+
+        //Minotaur is two blocks away
+        if(name.equals("Theseus") && blocksToOpponent == 2){
+            if(score == board.getS() - 1 && blocksToSupply == 1){
+                return Double.POSITIVE_INFINITY;
+            }
+            return Double.NEGATIVE_INFINITY;
+        }
+
         if(name.equals("Theseus"))
             return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1);
 
