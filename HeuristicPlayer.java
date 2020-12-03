@@ -164,12 +164,14 @@ class HeuristicPlayer extends Player{
         int randomDirection = 1 + 2 * ((int) (Math.random() * 10) % 4);
         double maxValue = movesValues[0] = evaluate(currentPos, opponentPos, randomDirection);
         int maxValueDie = randomDirection;
-        for(int i = 0; i<4 && i != randomDirection; ++i)
+        for(int i = 0; i<4; ++i){
+            if(i == randomDirection)
+                continue;
             if(maxValue < (movesValues[i] = evaluate(currentPos, opponentPos, 2*i + 1))){
                 maxValue = movesValues[i];
                 maxValueDie = 2*i + 1;
             }
-        
+        }
 
         int[] observation = seeAround(currentPos, opponentPos, maxValueDie);
         Integer[] tempArray = {maxValueDie, 0, observation[0] - 1, observation[1] - 1};
