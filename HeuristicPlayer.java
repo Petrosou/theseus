@@ -152,7 +152,7 @@ class HeuristicPlayer extends Player{
     public int getNextMove(int currentPos, int opponentPos){
         double[] movesValues = new double[4];
         int randomDirection = 1 + 2 * ((int) (Math.random() * 10) % 4);
-        double maxValue = movesValues[0] = evaluate(currentPos, opponentPos, randomDirection);
+        double maxValue = evaluate(currentPos, opponentPos, randomDirection);
         int maxValueDie = randomDirection;
         for(int i = 0; i<4; ++i){
             if(i == randomDirection)
