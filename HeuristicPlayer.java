@@ -126,25 +126,25 @@ class HeuristicPlayer extends Player{
         int[] observation = seeAround(currentPos, opponentPos, die);
         int blocksToSupply = observation[0];
         int blocksToOpponent = observation[1];
-        //Special case MS
-        if(name.equals("Theseus") && blocksToOpponent == 1 && blocksToSupply == 1){
-            if(score == board.getS() - 1){
-                return Double.POSITIVE_INFINITY;
-            }
-            return Double.NEGATIVE_INFINITY;
-        }
 
-        //Minotaur is two blocks away
-        if(name.equals("Theseus") && blocksToOpponent == 2){
-            if(score == board.getS() - 1 && blocksToSupply == 1){
-                return Double.POSITIVE_INFINITY;
+        if(name.equals("Theseus")){
+            ////Special case MS
+            if(blocksToOpponent == 1 && blocksToSupply == 1){
+                if(score == board.getS() - 1){
+                    return Double.POSITIVE_INFINITY;
+                }
+                return Double.NEGATIVE_INFINITY;
             }
-            return Double.NEGATIVE_INFINITY;
-        }
 
-        if(name.equals("Theseus"))
+            //Minotaur is two blocks away
+            if(score == board.getS() - 1 && blocksToSupply == 1 && blocksToOpponent == 2)
+                return Double.POSITIVE_INFINITY;
+
+            //General case
             return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1);
+        }
 
+        //This is for only for Minotaur
         return 0.5/(blocksToSupply) + 1.0/(blocksToOpponent - 1);       //there's not -1 so bloscksToOpponent is more important
     }
 
