@@ -64,7 +64,7 @@ public class Game {
 
 			//Check if all supplies were collected
 			if(gamers[0].getScore() == board.getS()){
-				winnerIdx = 1;
+				winnerIdx = 0;
 				break;
 			}
 			
@@ -95,9 +95,6 @@ public class Game {
 		//Someone won
 		else{
 			System.out.println(gamers[winnerIdx].getName() + " won the round.");
-			if(gamers[winnerIdx].getScore() == 5) {
-				System.out.println("And the winner is " + gamers[winnerIdx].getName() + ", they won " + gamers[1 - winnerIdx].getName() + " " + gamers[winnerIdx].getScore() + " - " + gamers[1-winnerIdx].getScore()+"!");
-			}
 		}
 	}
 
