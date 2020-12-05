@@ -85,10 +85,6 @@ public class Game {
 							break;
 						}	
 					}while(game.getRound() < n);		//n rounds -> 2n plays
-					
-					//println that reassures program didn't crash
-					if(k%1000 == 0)
-						System.out.println("Game " + k + " ended in " + game.getRound() + " rounds.");
 
 					//switch that handles counters
 					switch(winnerIdx){
