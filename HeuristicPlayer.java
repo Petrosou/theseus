@@ -2,20 +2,17 @@ import java.util.ArrayList;
 class HeuristicPlayer extends Player{
     private ArrayList<Integer[]> path;      //player moves' description [int die, int pickedSupply, int blocksToSupply, int blocksToOpponent]
     private int ability;
-    private int wallAbility;
 
     HeuristicPlayer(){
         super();
         path = new ArrayList<>(0);
         ability = 3;
-        wallAbility = 0;
     }
 
-    HeuristicPlayer(int playerId, String name, Board board, int score, int x, int y, ArrayList<Integer[]> path, int ability, int wallAbility){
+    HeuristicPlayer(int playerId, String name, Board board, int score, int x, int y, ArrayList<Integer[]> path, int ability){
         super(playerId, name, board, score, x, y);
         this.path = path;
         this.ability = ability;
-        this.wallAbility = wallAbility;
     }
 
     public void setAbility(int ability){
@@ -26,16 +23,8 @@ class HeuristicPlayer extends Player{
         return ability;
     }
 
-    public void setWallAbility(int wallAbility){
-        this.wallAbility = wallAbility;
-    }
-
-    public int getWallAbility(){
-        return wallAbility;
-    }
-
     private int[] seeAround(int currentPos, int opponentPos, int die){
-        int blocksToOpponent = Integer.MAX_VALUE, blocksToSupply = Integer.MAX_VALUE, blocksToWall = -1;
+        int blocksToOpponent = Integer.MAX_VALUE, blocksToSupply = Integer.MAX_VALUE;
         switch(die) {
             case 1: //case UP
                 for(int i = 0; i<ability; ++i){
@@ -57,14 +46,6 @@ class HeuristicPlayer extends Player{
                     //Enough data collected
                     if(blocksToOpponent != Integer.MAX_VALUE && blocksToSupply != Integer.MAX_VALUE)
                         break;
-                }
-                //BlocksToWall
-                for(int i = 0; i<wallAbility; ++i){
-                    //Interfering wall
-                    if(board.getTiles()[currentPos + i*board.getN()].getUp()) {
-                        blocksToWall = i;
-                        break;
-                    }
                 }
                 break;
             case 3: //case RIGHT
@@ -88,14 +69,6 @@ class HeuristicPlayer extends Player{
                     if(blocksToOpponent != Integer.MAX_VALUE && blocksToSupply != Integer.MAX_VALUE)
                         break;
                 }
-                //BlocksToWall
-                for(int i = 0; i<wallAbility; ++i){
-                    //Interfering wall
-                    if(board.getTiles()[currentPos + i].getRight()) {
-                        blocksToWall = i;
-                        break;
-                    }
-                }
                 break;
             case 5: //case DOWN
                 for(int i = 0; i<ability; ++i){
@@ -117,14 +90,6 @@ class HeuristicPlayer extends Player{
                     //Enough data collected
                     if(blocksToOpponent != Integer.MAX_VALUE && blocksToSupply != Integer.MAX_VALUE)
                         break;
-                }
-                //BlocksToWall
-                for(int i = 0; i<wallAbility; ++i){
-                    //Interfering wall
-                    if(board.getTiles()[currentPos - i*board.getN()].getDown()) {
-                        blocksToWall = i;
-                        break;
-                    }
                 }
                 break;
             case 7: //case LEFT
@@ -148,20 +113,12 @@ class HeuristicPlayer extends Player{
                     if(blocksToOpponent != Integer.MAX_VALUE && blocksToSupply != Integer.MAX_VALUE)
                         break;
                 }
-                //BlocksToWall
-                for(int i = 0; i<wallAbility; ++i){
-                    //Interfering wall
-                    if(board.getTiles()[currentPos - i].getLeft()) {
-                        blocksToWall = i;
-                        break;
-                    }
-                }
                 break;
             default:
                 System.out.println(die + " Some unexpected error in seeAround().");
                 java.lang.System.exit(1);
         }
-        int[] tempArray = {blocksToSupply, blocksToOpponent, blocksToWall};
+        int[] tempArray = {blocksToSupply, blocksToOpponent};
         return tempArray;
     }
     
