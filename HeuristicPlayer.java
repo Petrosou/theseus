@@ -3,7 +3,7 @@ class HeuristicPlayer extends Player{
     private ArrayList<Integer[]> path;      //player moves' description [int die, int pickedSupply, int blocksToSupply, int blocksToOpponent]
     private int ability;
     private int wallAbility;
-    private int a = 0;
+    private double a = 0;
 
     HeuristicPlayer(){
         super();
@@ -11,10 +11,11 @@ class HeuristicPlayer extends Player{
         ability = 3;
     }
 
-    HeuristicPlayer(int playerId, String name, Board board, int score, int x, int y, ArrayList<Integer[]> path, int ability){
+    HeuristicPlayer(int playerId, String name, Board board, int score, int x, int y, ArrayList<Integer[]> path, int ability, int wallAbility){
         super(playerId, name, board, score, x, y);
         this.path = path;
         this.ability = ability;
+        this.wallAbility = wallAbility;
     }
 
     public void setAbility(int ability){
@@ -23,6 +24,9 @@ class HeuristicPlayer extends Player{
 
     public int getAbility(){
         return ability;
+    }
+    public void setA(double b){
+        a = b;
     }
     public void erasePath(){
         path.clear();
