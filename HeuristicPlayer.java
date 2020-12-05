@@ -27,7 +27,7 @@ class HeuristicPlayer extends Player{
     }
 
     public void setWallAbility(int wallAbility){
-        this.wallAbility = ability;
+        this.wallAbility = wallAbility;
     }
 
     public int getWallAbility(){
