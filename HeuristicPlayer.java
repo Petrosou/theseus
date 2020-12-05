@@ -3,6 +3,7 @@ class HeuristicPlayer extends Player{
     private ArrayList<Integer[]> path;      //player moves' description [int die, int pickedSupply, int blocksToSupply, int blocksToOpponent]
     private int ability;
     private int wallAbility;
+    private int a = 0;
 
     HeuristicPlayer(){
         super();
@@ -33,6 +34,8 @@ class HeuristicPlayer extends Player{
     public int getWallAbility(){
         return wallAbility;
     }
+
+
 
     private int[] seeAround(int currentPos, int opponentPos, int die){
         int blocksToOpponent = Integer.MAX_VALUE, blocksToSupply = Integer.MAX_VALUE, blocksToWall = -1;
@@ -169,6 +172,7 @@ class HeuristicPlayer extends Player{
         int[] observation = seeAround(currentPos, opponentPos, die);
         int blocksToSupply = observation[0];
         int blocksToOpponent = observation[1];
+        int blocksToWall = observation[2];
 
         if(name.equals("Theseus")){
             ////Special case MS
@@ -182,11 +186,11 @@ class HeuristicPlayer extends Player{
             if(score == board.getS() - 1 && blocksToSupply == 1 && blocksToOpponent == 2)
                 return Double.POSITIVE_INFINITY;
             //General case
-            return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1);
+            return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1) - a/(blocksToWall+2);
         }
 
         //This is only for Minotaur
-        return 0.5/(blocksToSupply) + 1.0/(blocksToOpponent - 1);       //there's not -1 so bloscksToOpponent is more important
+        return 0.5/(blocksToSupply) + 1.0/(blocksToOpponent - 1) - a/(blocksToWall+2);       //there's not -1 so bloscksToOpponent is more important
     }
 
     //returns the move that has the greatest value
