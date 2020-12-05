@@ -39,7 +39,7 @@ public class Game {
 		int theseus, minotaur, ties;
 		theseus = minotaur = ties = 0;
 		//Times ran declared here
-		double tries = 1000;
+		double tries = 10000;
 		int maxWins = -1;
 		double maxA = 0;
 		double ultimateMaxA = 0;
