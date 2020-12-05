@@ -41,11 +41,11 @@ public class Game {
 		//Times ran declared here
 		double tries = 10000;
 		int maxWins = -1;
-		double maxA = 0;
-		double ultimateMaxA = 0;
-		double rangeRadius = 10;
+		double maxA = 1;
+		double ultimateMaxA = 1;
+		double rangeRadius = 1;
 		double maxWinRate = 0;
-		while(rangeRadius>0.1){
+		while(rangeRadius>0.01){
 			gamers[0].setA(maxA-rangeRadius);
 			while(gamers[0].getA()<ultimateMaxA+rangeRadius){
 				for(int k = 0 ; k<((int)tries); k++){
