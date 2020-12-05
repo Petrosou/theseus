@@ -3,7 +3,7 @@ class HeuristicPlayer extends Player{
     private ArrayList<Integer[]> path;      //player moves' description [int die, int pickedSupply, int blocksToSupply, int blocksToOpponent]
     private int ability;
     private int wallAbility;
-    private double a = 0;
+    private double a = 1.1;
 
     HeuristicPlayer(){
         super();
