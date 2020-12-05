@@ -42,6 +42,10 @@ class HeuristicPlayer extends Player{
     public void setA(double a){
         this.a = a;
     }
+    
+    public double getA(){
+        return a;
+    }
 
     private int[] seeAround(int currentPos, int opponentPos, int die){
         int blocksToOpponent = Integer.MAX_VALUE, blocksToSupply = Integer.MAX_VALUE, blocksToWall = -1;
@@ -205,6 +209,9 @@ class HeuristicPlayer extends Player{
         }
 
         //This is only for Minotaur
+         //Case losing turn
+         if(wallAbility != 0 && blocksToWall == 0)
+         return -10;
         if(wallAbility != 0)
             return 0.5/(blocksToSupply) + 1.0/(blocksToOpponent - 1) - a/(blocksToWall+2);       //there's not -1 so bloscksToOpponent is more important
         return 0.5/(blocksToSupply) + 1.0/(blocksToOpponent - 1);
