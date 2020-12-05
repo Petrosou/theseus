@@ -183,6 +183,13 @@ class HeuristicPlayer extends Player{
         int blocksToSupply = observation[0];
         int blocksToOpponent = observation[1];
         int blocksToWall = observation[2];
+        //avoid back and forth movements
+        int penalty = 0;
+        if(!path.isEmpty()){
+            if((path.get(path.size()-1)[0]%4 == die%4) && (path.get(path.size()-1)[0] != die)){
+                penalty = 1;
+            }
+        }
 
         if(name.equals("Theseus")){
             ////Special case MS
@@ -204,25 +211,16 @@ class HeuristicPlayer extends Player{
                 return Double.POSITIVE_INFINITY;
             //General case
             if(wallAbility != 0)
-                return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1) - a/(blocksToWall+2);
-            return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1);
+                return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1) - a/(blocksToWall+2)-5*penalty;
+            return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1)-5*penalty;
         }
-        //avoid back and forth movements
-
-        int penalty = 0;
-        if(!path.isEmpty()){
-            if((path.get(0)[path.size()-1]%4 == die%4) && (path.get(0)[path.size()-1] != die)){
-                penalty = 1;
-            }
-        }
-
         //This is only for Minotaur
          //Case losing turn
          if(wallAbility != 0 && blocksToWall == 0)
              return -10;
         if(wallAbility != 0)
             return 0.5/(blocksToSupply) + 1.0/(blocksToOpponent - 1) - a/(blocksToWall+2) -5*penalty;       //there's not -1 so bloscksToOpponent is more important
-        return 0.5/(blocksToSupply) + 1.0/(blocksToOpponent - 1);
+        return 0.5/(blocksToSupply) + 1.0/(blocksToOpponent - 1)-5*penalty;
     }
 
     //returns the move that has the greatest value
