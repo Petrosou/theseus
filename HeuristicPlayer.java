@@ -199,11 +199,15 @@ class HeuristicPlayer extends Player{
             if(score == board.getS() - 1 && blocksToSupply == 1 && blocksToOpponent == 2)
                 return Double.POSITIVE_INFINITY;
             //General case
-            return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1) - a/(blocksToWall+2);
+            if(wallAbility != 0)
+                return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1) - a/(blocksToWall+2);
+            return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1);
         }
 
         //This is only for Minotaur
-        return 0.5/(blocksToSupply) + 1.0/(blocksToOpponent - 1) - a/(blocksToWall+2);       //there's not -1 so bloscksToOpponent is more important
+        if(wallAbility != 0)
+            return 0.5/(blocksToSupply) + 1.0/(blocksToOpponent - 1) - a/(blocksToWall+2);       //there's not -1 so bloscksToOpponent is more important
+        return 0.5/(blocksToSupply) + 1.0/(blocksToOpponent - 1);
     }
 
     //returns the move that has the greatest value
