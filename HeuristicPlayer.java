@@ -3,7 +3,7 @@ class HeuristicPlayer extends Player{
     private ArrayList<Integer[]> path;      //player moves' description [int die, int pickedSupply, int blocksToSupply, int blocksToOpponent]
     private int ability;
     private int wallAbility;
-    private double a = 1.1;
+    private double a = 0;
 
     HeuristicPlayer(){
         super();
@@ -207,13 +207,21 @@ class HeuristicPlayer extends Player{
                 return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1) - a/(blocksToWall+2);
             return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1);
         }
+        //avoid back and forth movements
+
+        int penalty = 0;
+        if(!path.isEmpty()){
+            if((path.get(0)[path.size()-1]%4 == die%4) && (path.get(0)[path.size()-1] != die)){
+                penalty = 1;
+            }
+        }
 
         //This is only for Minotaur
          //Case losing turn
          if(wallAbility != 0 && blocksToWall == 0)
-         return -10;
+             return -10;
         if(wallAbility != 0)
-            return 0.5/(blocksToSupply) + 1.0/(blocksToOpponent - 1) - a/(blocksToWall+2);       //there's not -1 so bloscksToOpponent is more important
+            return 0.5/(blocksToSupply) + 1.0/(blocksToOpponent - 1) - a/(blocksToWall+2) -5*penalty;       //there's not -1 so bloscksToOpponent is more important
         return 0.5/(blocksToSupply) + 1.0/(blocksToOpponent - 1);
     }
 

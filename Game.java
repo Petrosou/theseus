@@ -35,6 +35,7 @@ public class Game {
 		HeuristicPlayer[] gamers = new HeuristicPlayer[2];
 		gamers[0] = new HeuristicPlayer(1, "Theseus", board, 0, 0, 0, new ArrayList<>(n), 3, 1);
 		gamers[1] = new HeuristicPlayer(2, "Minotaur", board, 0, N/2, N/2,  new ArrayList<>(n), 0, 0);
+		gamers[0].setA(1.1);
 		int winnerIdx = -1;
 		do{
 			System.out.println("\n\n");
