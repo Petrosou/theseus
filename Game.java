@@ -40,12 +40,12 @@ public class Game {
 		theseus = minotaur = ties = 0;
 		//Configurations
 		double tries = 100000;
-		double center = 0;
-		double range = 10;
+		double center = 0.5;
+		double range = 0.5;
 		int iteration = 1; // Divide range in 10 intervals iteration times
-		double percision = 1;  //Related to step, bigger->smaller step.
+		double percision = 2;  //Related to step, bigger->smaller step.
 
-		double maxA = 0;
+		double maxA = center;
 		int maxWins = -1;
 		double maxWinRate = 0;
 		for(int i = 0; i<iteration; ++i){

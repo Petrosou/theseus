@@ -3,8 +3,7 @@ class HeuristicPlayer extends Player{
     private ArrayList<Integer[]> path;      //player moves' description [int die, int pickedSupply, int blocksToSupply, int blocksToOpponent, tileId]
     private int ability;
     private boolean wallAbility;
-    private double revisitPenalty = 0.001;
-    private double a;
+    private double a = 0.001;
 
     HeuristicPlayer(){
         super();
@@ -91,8 +90,7 @@ class HeuristicPlayer extends Player{
             //Avoid revisiting a tile
             for(int i = 0; i<path.size(); ++i){
                 if(path.get(i)[4] == board.getTiles()[currentPos].neighborTileId(die, board.getN())){
-                    penalty+=revisitPenalty;
-                    break;
+                    penalty+=a;
                 }
             }
             ////Special case MS
@@ -120,7 +118,7 @@ class HeuristicPlayer extends Player{
         //avoid back and forth movements
         if(!path.isEmpty()){
             if((path.get(path.size()-1)[0]%4 == die%4) && (path.get(path.size()-1)[0] != die)){
-                penalty+=revisitPenalty;
+                penalty+=a;
             }
         }
         //Case losing turn
