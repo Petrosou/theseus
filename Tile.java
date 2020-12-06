@@ -99,4 +99,36 @@ public class Tile {
 		this.right = right;
 	}
 	
+	//Special functions
+    public int neighborTileId(int die, int N) {
+    	switch(die) {
+    		case 1:
+    			return tileId + N;
+    		case 3:
+    			return tileId + 1;
+    		case 5:
+    			return tileId - N;
+    		case 7:
+    			return tileId - 1;
+    		default:
+    			System.out.println("Invalid argument for die: " + die);
+    			return -1;
+    	}
+    }
+    
+    public boolean getWallInDirection(int die){
+    	switch(die) {
+		case 1:
+			return up;
+		case 3:
+			return right;
+		case 5:
+			return down;
+		case 7:
+			return left;
+		default:
+			System.out.println("Invalid argument for die: " + die);
+			return false;
+	}
+    }
 }
