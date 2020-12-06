@@ -154,7 +154,7 @@ class HeuristicPlayer extends Player{
     }
 
     public void statistics(){
-        System.out.println("\nStatistics of " + name + ":");
+        //System.out.println("\nStatistics of " + name + ":");
         int ups, rights, downs, lefts, currentRound;
         ups = rights = downs = lefts = 0;
         for(int i = 0; i<path.size(); ++i){
