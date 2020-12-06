@@ -97,8 +97,10 @@ class HeuristicPlayer extends Player{
             //Avoid revisiting a tile
             if(blocksToWall != 0){
                 for(int i = 0; i<path.size(); ++i){
-                    if(path.get(i)[3] == board.getTiles()[currentPos].neighborTileId(die, board.getN()))
+                    if(path.get(i)[4] == board.getTiles()[currentPos].neighborTileId(die, board.getN())){
                         penalty+=revisitedPenalty;
+                        break;
+                    }
                 }
             }
             //Don't approach walls
@@ -159,7 +161,7 @@ class HeuristicPlayer extends Player{
         }
 
         int[] observation = seeAround(currentPos, opponentPos, maxValueDie);
-        Integer[] tempArray = {maxValueDie, 0, observation[0] - 1, observation[1] - 1, -1};
+        Integer[] tempArray = {maxValueDie, 0, observation[0] - 1, observation[1] - 1, currentPos};
         if(name.equals("Theseus") && maxValue == Double.POSITIVE_INFINITY)
                 tempArray[1] = 1;
         path.add(tempArray);
@@ -251,7 +253,6 @@ class HeuristicPlayer extends Player{
 			setX(details[1]);
 			setY(details[2]);
 		}
-        path.get(path.size()-1)[3] = details[0];
         
 		//Theseus collected supply check
 		if(name.equals("Theseus")) {
