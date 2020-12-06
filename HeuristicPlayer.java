@@ -85,7 +85,7 @@ class HeuristicPlayer extends Player{
         int blocksToSupply = observation[0];
         int blocksToOpponent = observation[1];
         int blocksToWall = observation[2];
-        int penalty = 0;
+        double penalty = 0;
 
         if(name.equals("Theseus")){
             //Avoid revisiting a tile
