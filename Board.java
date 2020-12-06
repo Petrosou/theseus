@@ -82,8 +82,6 @@ public class Board {
 		this.supplies = supplies;
 	}
 	
-
-
 	//special functions
 	public void createTile(){
 		int counter;			//number of walls on a tile
@@ -242,6 +240,15 @@ public class Board {
 	public void createBoard() {
 		createTile();
 		createSupply();
+	}
+
+	public void empty(){
+		for(int i = 0 ; i < (N*N); i++){
+			tiles[i].setRight(false);
+			tiles[i].setUp(false);
+			tiles[i].setLeft(false);
+			tiles[i].setDown(false);
+		}
 	}
 
 	public String[][] getStringRepresentation(int theseusTile, int minotaurTile){

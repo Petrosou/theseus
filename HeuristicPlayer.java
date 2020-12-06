@@ -4,7 +4,7 @@ class HeuristicPlayer extends Player{
     private int ability;
     private int wallAbility;
     private double a = 0;
-    private double revisited = 0;
+    private double revisitedPenalty = 0.1;
 
     HeuristicPlayer(){
         super();
@@ -91,15 +91,20 @@ class HeuristicPlayer extends Player{
         int blocksToSupply = observation[0];
         int blocksToOpponent = observation[1];
         int blocksToWall = observation[2];
-        //avoid back and forth movements
         int penalty = 0;
-        if(!path.isEmpty()){
-            if((path.get(path.size()-1)[0]%4 == die%4) && (path.get(path.size()-1)[0] != die)){
-                penalty = 1;
-            }
-        }
 
         if(name.equals("Theseus")){
+            //Avoid revisiting a tile
+            if(blocksToWall != 0){
+                for(int i = 0; i<path.size(); ++i){
+                    if(path.get(i)[3] == board.getTiles()[currentPos].neighborTileId(die, board.getN()))
+                        penalty+=revisitedPenalty;
+                }
+            }
+            //Don't approach walls
+            if(wallAbility != 0){
+                penalty+=a/(blocksToWall+2);
+            }
             ////Special case MS
             if(blocksToOpponent == 1 && blocksToSupply == 1){
                 if(score == board.getS() - 1){
@@ -118,17 +123,24 @@ class HeuristicPlayer extends Player{
             if(score == board.getS() - 1 && blocksToSupply == 1 && blocksToOpponent == 2)
                 return Double.POSITIVE_INFINITY;
             //General case
-            if(wallAbility != 0)
-                return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1) - a/(blocksToWall+2)-5*penalty;
-            return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1)-5*penalty;
+            return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1)-penalty;
         }
         //This is only for Minotaur
-         //Case losing turn
-         if(wallAbility != 0 && blocksToWall == 0)
-             return -10;
-        if(wallAbility != 0)
-            return 0.5/(blocksToSupply) + 1.0/(blocksToOpponent - 1) - a/(blocksToWall+2) -5*penalty;       //there's not -1 so bloscksToOpponent is more important
-        return 0.5/(blocksToSupply) + 1.0/(blocksToOpponent - 1)-5*penalty;
+
+        //avoid back and forth movements
+        if(!path.isEmpty()){
+            if((path.get(path.size()-1)[0]%4 == die%4) && (path.get(path.size()-1)[0] != die)){
+                penalty+=revisitedPenalty;
+            }
+        }
+        if(wallAbility != 0){
+            penalty+=a/(blocksToWall+2);
+        }
+        //Case losing turn
+        if(wallAbility != 0 && blocksToWall == 0)
+            return -10;
+        //General case
+        return 0.5/(blocksToSupply) + 1.0/(blocksToOpponent - 1)-penalty;  //there's not -1 so bloscksToOpponent is more important
     }
 
     //returns the move that has the greatest value
@@ -147,7 +159,7 @@ class HeuristicPlayer extends Player{
         }
 
         int[] observation = seeAround(currentPos, opponentPos, maxValueDie);
-        Integer[] tempArray = {maxValueDie, 0, observation[0] - 1, observation[1] - 1, };
+        Integer[] tempArray = {maxValueDie, 0, observation[0] - 1, observation[1] - 1, -1};
         if(name.equals("Theseus") && maxValue == Double.POSITIVE_INFINITY)
                 tempArray[1] = 1;
         path.add(tempArray);
@@ -155,26 +167,26 @@ class HeuristicPlayer extends Player{
     }
 
     public void statistics(){
-        System.out.println("\nStatistics of " + name + ":");
+        //System.out.println("\nStatistics of " + name + ":");
         int ups, rights, downs, lefts, currentRound;
         ups = rights = downs = lefts = 0;
         for(int i = 0; i<path.size(); ++i){
             currentRound = i + 1;
             switch(path.get(i)[0]) {
                 case 1://case UP
-                    System.out.println(name + " moved up in round " + currentRound + ".");
+                    //System.out.println(name + " moved up in round " + currentRound + ".");
                     ++ups;
                     break;
                 case 3://case RIGHT
-                    System.out.println(name + " moved right in round " + currentRound + ".");
+                    //System.out.println(name + " moved right in round " + currentRound + ".");
                 ++rights;
                     break;
                 case 5://Case DOWN
-                    System.out.println(name + " moved down in round " + currentRound + ".");
+                    //System.out.println(name + " moved down in round " + currentRound + ".");
                 ++downs;
                     break;
                 case 7://Case LEFT
-                    System.out.println(name + " moved left in round " + currentRound + ".");
+                    //System.out.println(name + " moved left in round " + currentRound + ".");
                 ++lefts;
                     break;
                 default:
@@ -198,10 +210,10 @@ class HeuristicPlayer extends Player{
             
             System.out.println();
         }
-        System.out.println(name + " tried to moved up a total of " + ups + " times.");
-        System.out.println(name + " tried to moved right a total of " + rights + " times.");
-        System.out.println(name + " tried to moved down a total of " + downs + " times.");
-        System.out.println(name + " tried to moved left a total of " + lefts + " times.");
+        //System.out.println(name + " tried to moved up a total of " + ups + " times.");
+        //System.out.println(name + " tried to moved right a total of " + rights + " times.");
+        //System.out.println(name + " tried to moved down a total of " + downs + " times.");
+        //System.out.println(name + " tried to moved left a total of " + lefts + " times.");
 
     }
 
@@ -210,23 +222,23 @@ class HeuristicPlayer extends Player{
         details[3] = -1;
 		switch(die) {
 		case 1://case UP
-			System.out.println(name + " rolled UP.");		
+			//System.out.println(name + " rolled UP.");		
 			break;
 		case 3://case RIGHT
-			System.out.println(name + " rolled RIGHT.");
+			//System.out.println(name + " rolled RIGHT.");
 			break;
 		case 5://Case DOWN
-			System.out.println(name + " rolled DOWN.");
+			//System.out.println(name + " rolled DOWN.");
 			break;
 		case 7://Case LEFT
-			System.out.println(name + " rolled LEFT.");
+			//System.out.println(name + " rolled LEFT.");
 			break;
 		}
 		
 		//Valid move check
 		//Invalid
 		if(board.getTiles()[board.getN()*x+y].getWallInDirection(die)) {
-			System.out.println(name + " cannot move that way.");
+			//System.out.println(name + " cannot move that way.");
 			details[0] = board.getN()*x+y;
 			details[1] = board.getTiles()[board.getN()*x+y].getX();
 			details[2] = board.getTiles()[board.getN()*x+y].getY();
@@ -239,12 +251,13 @@ class HeuristicPlayer extends Player{
 			setX(details[1]);
 			setY(details[2]);
 		}
-		
+        path.get(path.size()-1)[3] = details[0];
+        
 		//Theseus collected supply check
 		if(name.equals("Theseus")) {
 			for(int i = 0 ; i < board.getS() ; i++) {
 				if((details[0] == board.getSupplies()[i].getSupplyTileId())&&(board.getSupplies()[i].isObtainable())) {
-                    System.out.println(name + " picked up supply " + board.getSupplies()[i].getSupplyId() + ".");
+                    //System.out.println(name + " picked up supply " + board.getSupplies()[i].getSupplyId() + ".");
 					details[3] = i;
 					board.getSupplies()[i].setObtainable(false);
 					break;
