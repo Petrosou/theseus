@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+
+import javax.lang.model.util.ElementScanner14;
 class HeuristicPlayer extends Player{
     private ArrayList<Integer[]> path;      //player moves' description [int die, int pickedSupply, int blocksToSupply, int blocksToOpponent, tileId]
     private int ability;
@@ -106,8 +108,11 @@ class HeuristicPlayer extends Player{
             if(wallAbility && blocksToWall == 0)
                     return -10;
             //Minotaur is two blocks away
-            if(score == board.getS() - 1 && blocksToSupply == 1 && blocksToOpponent == 2)
-                return Double.POSITIVE_INFINITY;
+            if(blocksToOpponent == 2)
+                if(score == board.getS() - 1 && blocksToSupply == 1 blocksToOpponent == 2)
+                    return Double.POSITIVE_INFINITY;
+                else
+                    return Double.NEGATIVE_INFINITY;
             //General case
             return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1)-penalty;
         }
