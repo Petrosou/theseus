@@ -4,6 +4,7 @@ class HeuristicPlayer extends Player{
     private int ability;
     private boolean wallAbility;
     private double revisitPenalty = 0.001;
+    private double a;
 
     HeuristicPlayer(){
         super();
@@ -39,6 +40,13 @@ class HeuristicPlayer extends Player{
         path.clear();
     }
     
+    public void setA(double a){
+        this.a = a;
+    }
+    
+    public double getA(){
+        return a;
+    }
     private int[] seeAround(int currentPos, int opponentPos, int die){
         int blocksToOpponent = Integer.MAX_VALUE, blocksToSupply = Integer.MAX_VALUE, blocksToWall = -1;
         int nId = board.getTiles()[currentPos].getTileId();
