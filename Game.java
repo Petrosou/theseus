@@ -33,15 +33,15 @@ public class Game {
 		Board board = new Board(N, S, W);
 		board.createBoard();
 		HeuristicPlayer[] gamers = new HeuristicPlayer[2];
-		gamers[0] = new HeuristicPlayer(1, "Theseus", board, 0, 0, 0, new ArrayList<>(n), 3, 14);
-		gamers[1] = new HeuristicPlayer(2, "Minotaur", board, 0, N/2, N/2,  new ArrayList<>(n), 0, 0);
+		gamers[0] = new HeuristicPlayer(1, "Theseus", board, 0, 0, 0, new ArrayList<>(n), 3, true);
+		gamers[1] = new HeuristicPlayer(2, "Minotaur", board, 0, N/2, N/2,  new ArrayList<>(n), 0, false);
 		int winnerIdx = -1;
 		int theseus, minotaur, ties;
 		theseus = minotaur = ties = 0;
 		//Configurations
 		double tries = 100000;
 		double center = 0;
-		double range = 3;
+		double range = 10;
 		int iteration = 1; // Divide range in 10 intervals iteration times
 		double percision = 1;  //Related to step, bigger->smaller step.
 
