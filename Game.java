@@ -123,7 +123,7 @@ public class Game {
 					System.out.println("Theseus: " + 100*theseus/tries + "%");
 					System.out.println("Minotaur: " + 100*minotaur/tries + "%");
 					System.out.println("Ties: " + 100*ties/tries + "%");
-					System.out.println("Best a and winRate :\n(" + gamers[0].getA()+", " + 100*theseus/tries+")");
+					System.out.println("a and winRate :\n(" + gamers[0].getA()+", " + 100*theseus/tries+")");
 				}
 				else{
 					System.out.println("Error... Ran " + (theseus+minotaur+ties) + " times.");
