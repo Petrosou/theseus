@@ -102,10 +102,6 @@ class HeuristicPlayer extends Player{
                 }
                 return Double.NEGATIVE_INFINITY;
             }
-            //Minotaur is one block away
-            if(blocksToOpponent == 1 && wallAbility)
-                if(blocksToWall == 0)
-                    return Double.NEGATIVE_INFINITY;
             //Case losing turn
             if(wallAbility && blocksToWall == 0)
                     return -10;
