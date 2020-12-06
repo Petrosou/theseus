@@ -242,6 +242,15 @@ public class Board {
 		createSupply();
 	}
 
+	public void empty(){
+		for(int i = 0 ; i < (N*N); i++){
+			tiles[i].setRight(false);
+			tiles[i].setUp(false);
+			tiles[i].setLeft(false);
+			tiles[i].setDown(false);
+		}
+	}
+
 	public String[][] getStringRepresentation(int theseusTile, int minotaurTile){
 		String[][] theBoard = new String[2 * N + 1][N];
 		int line = 0;

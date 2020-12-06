@@ -1,18 +1,22 @@
 import java.util.ArrayList;
 class HeuristicPlayer extends Player{
-    private ArrayList<Integer[]> path;      //player moves' description [int die, int pickedSupply, int blocksToSupply, int blocksToOpponent]
+    private ArrayList<Integer[]> path;      //player moves' description [int die, int pickedSupply, int blocksToSupply, int blocksToOpponent, tileId]
     private int ability;
+    private boolean wallAbility;
+    private double revisitPenalty = 0.001;
 
     HeuristicPlayer(){
         super();
         path = new ArrayList<>(0);
         ability = 3;
+        wallAbility = false;
     }
 
-    HeuristicPlayer(int playerId, String name, Board board, int score, int x, int y, ArrayList<Integer[]> path, int ability){
+    HeuristicPlayer(int playerId, String name, Board board, int score, int x, int y, ArrayList<Integer[]> path, int ability, boolean wallAbility){
         super(playerId, name, board, score, x, y);
         this.path = path;
         this.ability = ability;
+        this.wallAbility = wallAbility;
     }
 
     public void setAbility(int ability){
@@ -23,102 +27,48 @@ class HeuristicPlayer extends Player{
         return ability;
     }
 
+    public void setWallAbility(boolean wallAbility){
+        this.wallAbility = wallAbility;
+    }
+
+    public boolean getWallAbility(){
+        return wallAbility;
+    }
+
+    public void erasePath(){
+        path.clear();
+    }
+    
     private int[] seeAround(int currentPos, int opponentPos, int die){
-        int blocksToOpponent = Integer.MAX_VALUE, blocksToSupply = Integer.MAX_VALUE;
-        switch(die) {
-            case 1: //case UP
-                for(int i = 0; i<ability; ++i){
-                    //Interfering wall
-                    if(board.getTiles()[currentPos + i*board.getN()].getUp()) {
-                        break;
-                    }
-                    
-                    //Opponent
-                    if(opponentPos == currentPos + (i+1)*board.getN()){
-                        blocksToOpponent = i + 1;
-                    }
-
-                    //Supply
-                    for(int j = 0;  j< board.getS(); ++j) 
-                        if(currentPos + (i + 1)*board.getN() == board.getSupplies()[j].getSupplyTileId() && board.getSupplies()[j].isObtainable() && blocksToSupply == Integer.MAX_VALUE)
-                            blocksToSupply = i + 1;
-
-                    //Enough data collected
-                    if(blocksToOpponent != Integer.MAX_VALUE && blocksToSupply != Integer.MAX_VALUE)
-                        break;
-                }
+        int blocksToOpponent = Integer.MAX_VALUE, blocksToSupply = Integer.MAX_VALUE, blocksToWall = -1;
+        int nId = board.getTiles()[currentPos].getTileId();
+        for(int i = 0; i<ability; ++i){
+            //Interfering wall
+            if(board.getTiles()[nId].getWallInDirection(die)) {
                 break;
-            case 3: //case RIGHT
-                for(int i = 0; i<ability; ++i){
-                    //Interfering wall
-                    if(board.getTiles()[currentPos + i].getRight()) {
-                        break;
-                    }
-                    
-                    //Opponent
-                    if(opponentPos == currentPos + i + 1){
-                        blocksToOpponent = i + 1;
-                    }
+            }
+            nId = board.getTiles()[nId].neighborTileId(die, board.getN());
+            //Opponent
+            if(opponentPos == nId){
+                blocksToOpponent = i + 1;
+            }
 
-                    //Supply
-                    for(int j = 0;  j< board.getS(); ++j) 
-                        if(currentPos + i + 1 == board.getSupplies()[j].getSupplyTileId() && board.getSupplies()[j].isObtainable() && blocksToSupply == Integer.MAX_VALUE)
-                            blocksToSupply = i + 1;
+            //Supply
+            for(int j = 0;  j< board.getS(); ++j) 
+                if(nId == board.getSupplies()[j].getSupplyTileId() && board.getSupplies()[j].isObtainable() && blocksToSupply == Integer.MAX_VALUE)
+                    blocksToSupply = i + 1;
 
-                    //Enough data collected
-                    if(blocksToOpponent != Integer.MAX_VALUE && blocksToSupply != Integer.MAX_VALUE)
-                        break;
-                }
+            //Enough data collected
+            if(blocksToOpponent != Integer.MAX_VALUE && blocksToSupply != Integer.MAX_VALUE)
                 break;
-            case 5: //case DOWN
-                for(int i = 0; i<ability; ++i){
-                    //Interfering wall
-                    if(board.getTiles()[currentPos - i*board.getN()].getDown()) {
-                        break;
-                    }
-                    
-                    //Opponent
-                    if(opponentPos == currentPos - (i+1)*board.getN()){
-                        blocksToOpponent = i+1;
-                    }
-
-                    //Supply
-                    for(int j = 0;  j<board.getS(); ++j) 
-                        if(currentPos - (i+1)*board.getN() == board.getSupplies()[j].getSupplyTileId() && board.getSupplies()[j].isObtainable() && blocksToSupply == Integer.MAX_VALUE)
-                            blocksToSupply = i+1;
-
-                    //Enough data collected
-                    if(blocksToOpponent != Integer.MAX_VALUE && blocksToSupply != Integer.MAX_VALUE)
-                        break;
-                }
-                break;
-            case 7: //case LEFT
-                for(int i = 0; i<ability; ++i){
-                    //Interfering wall
-                    if(board.getTiles()[currentPos - i].getLeft()) {
-                        break;
-                    }
-                    
-                    //Opponent
-                    if(opponentPos == currentPos - i - 1){
-                        blocksToOpponent = i + 1;
-                    }
-
-                    //Supply
-                    for(int j = 0;  j<board.getS(); ++j) 
-                        if(currentPos - i - 1== board.getSupplies()[j].getSupplyTileId() && board.getSupplies()[j].isObtainable() && blocksToSupply == Integer.MAX_VALUE)
-                            blocksToSupply = i + 1;
-
-                    //Enough data collected
-                    if(blocksToOpponent != Integer.MAX_VALUE && blocksToSupply != Integer.MAX_VALUE)
-                        break;
-                }
-                break;
-            default:
-                System.out.println(die + " Some unexpected error in seeAround().");
-                java.lang.System.exit(1);
         }
-        int[] tempArray = {blocksToSupply, blocksToOpponent};
+        //Wall
+        if(wallAbility){
+            if(board.getTiles()[currentPos].getWallInDirection(die)) {
+                blocksToWall = 0;
+            }
+        }
+        int[] tempArray = {blocksToSupply, blocksToOpponent, blocksToWall};
         return tempArray;
     }
     
@@ -126,8 +76,17 @@ class HeuristicPlayer extends Player{
         int[] observation = seeAround(currentPos, opponentPos, die);
         int blocksToSupply = observation[0];
         int blocksToOpponent = observation[1];
+        int blocksToWall = observation[2];
+        int penalty = 0;
 
         if(name.equals("Theseus")){
+            //Avoid revisiting a tile
+            for(int i = 0; i<path.size(); ++i){
+                if(path.get(i)[4] == board.getTiles()[currentPos].neighborTileId(die, board.getN())){
+                    penalty+=revisitPenalty;
+                    break;
+                }
+            }
             ////Special case MS
             if(blocksToOpponent == 1 && blocksToSupply == 1){
                 if(score == board.getS() - 1){
@@ -135,15 +94,32 @@ class HeuristicPlayer extends Player{
                 }
                 return Double.NEGATIVE_INFINITY;
             }
+            //Minotaur is one block away
+            if(blocksToOpponent == 1 && wallAbility)
+                if(blocksToWall == 0)
+                    return Double.NEGATIVE_INFINITY;
+            //Case losing turn
+            if(wallAbility && blocksToWall == 0)
+                    return -10;
             //Minotaur is two blocks away
             if(score == board.getS() - 1 && blocksToSupply == 1 && blocksToOpponent == 2)
                 return Double.POSITIVE_INFINITY;
             //General case
-            return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1);
+            return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1)-penalty;
         }
-
         //This is only for Minotaur
-        return 0.5/(blocksToSupply) + 1.0/(blocksToOpponent - 1);       //there's not -1 so bloscksToOpponent is more important
+
+        //avoid back and forth movements
+        if(!path.isEmpty()){
+            if((path.get(path.size()-1)[0]%4 == die%4) && (path.get(path.size()-1)[0] != die)){
+                penalty+=revisitPenalty;
+            }
+        }
+        //Case losing turn
+        if(wallAbility && blocksToWall == 0)
+            return -10;
+        //General case
+        return 0.5/(blocksToSupply) + 1.0/(blocksToOpponent - 1)-penalty;  //there's not -1 so bloscksToOpponent is more important
     }
 
     //returns the move that has the greatest value
@@ -162,7 +138,7 @@ class HeuristicPlayer extends Player{
         }
 
         int[] observation = seeAround(currentPos, opponentPos, maxValueDie);
-        Integer[] tempArray = {maxValueDie, 0, observation[0] - 1, observation[1] - 1};
+        Integer[] tempArray = {maxValueDie, 0, observation[0] - 1, observation[1] - 1, currentPos};
         if(name.equals("Theseus") && maxValue == Double.POSITIVE_INFINITY)
                 tempArray[1] = 1;
         path.add(tempArray);
@@ -170,26 +146,26 @@ class HeuristicPlayer extends Player{
     }
 
     public void statistics(){
-        System.out.println("\nStatistics of " + name + ":");
+        //System.out.println("\nStatistics of " + name + ":");
         int ups, rights, downs, lefts, currentRound;
         ups = rights = downs = lefts = 0;
         for(int i = 0; i<path.size(); ++i){
             currentRound = i + 1;
             switch(path.get(i)[0]) {
                 case 1://case UP
-                    System.out.println(name + " moved up in round " + currentRound + ".");
+                    //System.out.println(name + " moved up in round " + currentRound + ".");
                     ++ups;
                     break;
                 case 3://case RIGHT
-                    System.out.println(name + " moved right in round " + currentRound + ".");
+                    //System.out.println(name + " moved right in round " + currentRound + ".");
                 ++rights;
                     break;
                 case 5://Case DOWN
-                    System.out.println(name + " moved down in round " + currentRound + ".");
+                    //System.out.println(name + " moved down in round " + currentRound + ".");
                 ++downs;
                     break;
                 case 7://Case LEFT
-                    System.out.println(name + " moved left in round " + currentRound + ".");
+                    //System.out.println(name + " moved left in round " + currentRound + ".");
                 ++lefts;
                     break;
                 default:
@@ -213,10 +189,10 @@ class HeuristicPlayer extends Player{
             
             System.out.println();
         }
-        System.out.println(name + " tried to moved up a total of " + ups + " times.");
-        System.out.println(name + " tried to moved right a total of " + rights + " times.");
-        System.out.println(name + " tried to moved down a total of " + downs + " times.");
-        System.out.println(name + " tried to moved left a total of " + lefts + " times.");
+        //System.out.println(name + " tried to moved up a total of " + ups + " times.");
+        //System.out.println(name + " tried to moved right a total of " + rights + " times.");
+        //System.out.println(name + " tried to moved down a total of " + downs + " times.");
+        //System.out.println(name + " tried to moved left a total of " + lefts + " times.");
 
     }
 
@@ -225,112 +201,46 @@ class HeuristicPlayer extends Player{
         details[3] = -1;
 		switch(die) {
 		case 1://case UP
-			System.out.println(name + " rolled UP.");
-			if(board.getTiles()[board.getN()*x+y].getUp()) {
-				System.out.println(name + " cannot move up.");
-				details[0] = board.getN()*x+y;
-				details[1] = board.getTiles()[board.getN()*x+y].getX();
-				details[2] = board.getTiles()[board.getN()*x+y].getY();
-				break;
-			}
-			details[0] = board.getN()*x+y + board.getN();
-			details[1] = board.getTiles()[details[0]].getX();
-			details[2] = board.getTiles()[details[0]].getY();
-			setX(details[1]);
-			setY(details[2]);
-			
-			if(getPlayerId() == 1) {
-				for(int i = 0 ; i < board.getS() ; i++) {
-					if((details[0] == board.getSupplies()[i].getSupplyTileId())&&(board.getSupplies()[i].isObtainable())) {
-                        System.out.println(name + " picked up supply " + board.getSupplies()[i].getSupplyId() + ".");
-						details[3] = i;
-						board.getSupplies()[i].setObtainable(false);
-						break;
-					}
-				}
-			}		
+			//System.out.println(name + " rolled UP.");		
 			break;
 		case 3://case RIGHT
-			System.out.println(name + " rolled RIGHT.");
-			if(board.getTiles()[board.getN()*x+y].getRight()) {
-				System.out.println(name + " cannot move right.");
-				details[0] = board.getN()*x+y;
-				details[1] = board.getTiles()[board.getN()*x+y].getX();
-				details[2] = board.getTiles()[board.getN()*x+y].getY();
-				break;
-			}
-			
-			details[0] = board.getN()*x+y + 1;
-			details[1] = board.getTiles()[details[0]].getX();
-			details[2] = board.getTiles()[details[0]].getY();
-			setX(details[1]);
-			setY(details[2]);
-			
-			if(getPlayerId() == 1) {
-				for(int i = 0 ; i < board.getS() ; i++) {
-					if((details[0] == board.getSupplies()[i].getSupplyTileId())&&(board.getSupplies()[i].isObtainable())) {
-						System.out.println(name + " picked up supply " + board.getSupplies()[i].getSupplyId() + ".");
-						details[3] = i;
-						board.getSupplies()[i].setObtainable(false);
-						break;
-					}
-				}
-			}
+			//System.out.println(name + " rolled RIGHT.");
 			break;
 		case 5://Case DOWN
-			System.out.println(name + " rolled DOWN.");
-			if(board.getTiles()[board.getN()*x+y].getDown()) {
-				System.out.println(name + " cannot move down.");
-				details[0] = board.getN()*x+y;
-				details[1] = board.getTiles()[board.getN()*x+y].getX();
-				details[2] = board.getTiles()[board.getN()*x+y].getY();
-				break;
-			}
-			
-			details[0] = board.getN()*x+y - board.getN();
-			details[1] = board.getTiles()[details[0]].getX();
-			details[2] = board.getTiles()[details[0]].getY();
-			setX(details[1]);
-			setY(details[2]);
-			
-			if(getPlayerId() == 1) {
-				for(int i = 0 ; i < board.getS() ; i++) {
-					if(details[0] == board.getSupplies()[i].getSupplyTileId() && board.getSupplies()[i].isObtainable()) {
-						System.out.println(name + " picked up supply " + board.getSupplies()[i].getSupplyId() + ".");
-						details[3] = i;
-						board.getSupplies()[i].setObtainable(false);
-						break;
-					}
-				}
-			}
+			//System.out.println(name + " rolled DOWN.");
 			break;
 		case 7://Case LEFT
-			System.out.println(name + " rolled LEFT.");
-			if(board.getTiles()[board.getN()*x+y].getLeft()) {
-				System.out.println(name + " cannot move left.");
-				details[0] = board.getN()*x+y;
-				details[1] = board.getTiles()[board.getN()*x+y].getX();
-				details[2] = board.getTiles()[board.getN()*x+y].getY();
-				break;
-			}
-			
-			details[0] = board.getN()*x+y - 1;
+			//System.out.println(name + " rolled LEFT.");
+			break;
+		}
+		
+		//Valid move check
+		//Invalid
+		if(board.getTiles()[board.getN()*x+y].getWallInDirection(die)) {
+			//System.out.println(name + " cannot move that way.");
+			details[0] = board.getN()*x+y;
+			details[1] = board.getTiles()[board.getN()*x+y].getX();
+			details[2] = board.getTiles()[board.getN()*x+y].getY();
+		}
+		//Valid
+		else {
+			details[0] = board.getTiles()[board.getN()*x+y].neighborTileId(die, board.getN());
 			details[1] = board.getTiles()[details[0]].getX();
 			details[2] = board.getTiles()[details[0]].getY();
 			setX(details[1]);
 			setY(details[2]);
-			
-			if(getPlayerId() == 1) {
-				for(int i = 0 ; i < board.getS() ; i++) {
-					if((details[0] == board.getSupplies()[i].getSupplyTileId())&&(board.getSupplies()[i].isObtainable())) {
-						System.out.println(name + " picked up supply " + board.getSupplies()[i].getSupplyId() + ".");
-						details[3] = i;
-						board.getSupplies()[i].setObtainable(false);
-						break;
-					}
+		}
+        
+		//Theseus collected supply check
+		if(name.equals("Theseus")) {
+			for(int i = 0 ; i < board.getS() ; i++) {
+				if((details[0] == board.getSupplies()[i].getSupplyTileId())&&(board.getSupplies()[i].isObtainable())) {
+                    //System.out.println(name + " picked up supply " + board.getSupplies()[i].getSupplyId() + ".");
+					details[3] = i;
+					board.getSupplies()[i].setObtainable(false);
+					break;
 				}
 			}
-			break;
 		}
 		return details;
 	}
