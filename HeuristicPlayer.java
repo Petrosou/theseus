@@ -108,11 +108,12 @@ class HeuristicPlayer extends Player{
             if(wallAbility && blocksToWall == 0)
                     return -10;
             //Minotaur is two blocks away
-            if(blocksToOpponent == 2)
-                if(score == board.getS() - 1 && blocksToSupply == 1 blocksToOpponent == 2)
+            if(blocksToOpponent == 2){
+                if(score == board.getS() - 1 && blocksToSupply == 1)
                     return Double.POSITIVE_INFINITY;
                 else
                     return Double.NEGATIVE_INFINITY;
+            }
             //General case
             return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1)-penalty;
         }
