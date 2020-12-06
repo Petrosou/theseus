@@ -102,6 +102,10 @@ class HeuristicPlayer extends Player{
                 }
                 return Double.NEGATIVE_INFINITY;
             }
+            //Minotaur is one block away
+            if(blocksToOpponent == 1 && wallAbility)
+                if(blocksToWall == 0)
+                    return Double.NEGATIVE_INFINITY;
             //Case losing turn
             if(wallAbility && blocksToWall == 0)
                     return -10;
@@ -140,7 +144,25 @@ class HeuristicPlayer extends Player{
                 maxValueDie = 2*i + 1;
             }
         }
-
+        if(name.equals("Theseus")) {
+	        for(int i = 0 ; i< 4; i++) {
+	        	switch(i){
+	        	case 0:
+	        		System.out.println("Up eval: " + movesValues[i]);
+	        		break;
+	        	case 1:
+	        		System.out.println("Right eval: " + movesValues[i]);
+	        		break;
+	        	case 2:
+	        		System.out.println("Down eval: " + movesValues[i]);
+	        		break;
+	        	case 3:
+	        		System.out.println("Left eval: " + movesValues[i]);
+	        		break;
+	        	}
+	        }
+        }
+        
         int[] observation = seeAround(currentPos, opponentPos, maxValueDie);
         Integer[] tempArray = {maxValueDie, 0, observation[0] - 1, observation[1] - 1, currentPos};
         if(name.equals("Theseus") && maxValue == Double.POSITIVE_INFINITY)

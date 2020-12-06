@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 /**
- * Ξ£ΞΏΟ…Ξ»Ξ―Ξ΄Ξ·Ο‚ Ξ Ξ­Ο„ΟΞΏΟ‚ 9971 petrosis@ece.auth.gr Ξ¤ΞµΟΞ¶Ξ―Ξ΄Ξ·Ο‚ Ξ‘Ξ»Ξ­ΞΎΞ±Ξ½Ξ΄ΟΞΏΟ‚ 10072
+ * Σουλίδης Πέτρος 9971 petrosis@ece.auth.gr Τερζίδης Αλέξανδρος 10072
  * terzidisa@ece.auth.gr
  */
 
@@ -82,8 +82,9 @@ public class Game {
 			//Check if Minotaur ran into Theseus
 			if(gamers[0].getX() == gamers[1].getX() && gamers[0].getY() == gamers[1].getY()) {
 				winnerIdx = 1;
-					break;
-			}	
+				break;
+			}
+			
 		}while(game.getRound() < n);		//n rounds -> 2n plays
 
 		gamers[0].statistics();
