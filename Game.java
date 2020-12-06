@@ -38,15 +38,16 @@ public class Game {
 		int winnerIdx = -1;
 		int theseus, minotaur, ties;
 		theseus = minotaur = ties = 0;
-		//Times ran declared here
+		//Configurations
 		double tries = 100000;
-		int maxWins = -1;
 		double center = 0;
+		double range = 1;
+		int percision = 1;
+
 		double maxA = 0;
-		double range = 10;
-		int step = 1;
+		int maxWins = -1;
 		double maxWinRate = 0;
-		while(range>1){
+		while(range>range/Math.pow(10, percision)){
 			gamers[0].setA(center-range);
 			while(gamers[0].getA()<=maxA+range){
 				for(int k = 0 ; k<((int)tries); k++){
@@ -132,7 +133,7 @@ public class Game {
 					maxWins = theseus;
 					maxWinRate = 100*theseus/tries;
 				}
-				gamers[0].setA(gamers[0].getA() + step);
+				gamers[0].setA(gamers[0].getA() + range/10);
 				theseus = ties = minotaur = 0;
 			}
 			maxA = center;
