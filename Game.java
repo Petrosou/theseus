@@ -33,7 +33,7 @@ public class Game {
 		Board board = new Board(N, S, W);
 		board.createBoard();
 		HeuristicPlayer[] gamers = new HeuristicPlayer[2];
-		gamers[0] = new HeuristicPlayer(1, "Theseus", board, 0, 0, 0, new ArrayList<>(n), 3, 1);
+		gamers[0] = new HeuristicPlayer(1, "Theseus", board, 0, 0, 0, new ArrayList<>(n), 3, 14);
 		gamers[1] = new HeuristicPlayer(2, "Minotaur", board, 0, N/2, N/2,  new ArrayList<>(n), 0, 0);
 		int winnerIdx = -1;
 		int theseus, minotaur, ties;
@@ -41,13 +41,14 @@ public class Game {
 		//Configurations
 		double tries = 100000;
 		double center = 0;
-		double range = 1;
-		int percision = 1; // Divide range in 10 intervals percision times
+		double range = 3;
+		int iteration = 1; // Divide range in 10 intervals iteration times
+		double percision = 1;  //Related to step, bigger->smaller step.
 
 		double maxA = 0;
 		int maxWins = -1;
 		double maxWinRate = 0;
-		for(int i = 0; i<percision; ++i){
+		for(int i = 0; i<iteration; ++i){
 			gamers[0].setA(center-range);
 			while(gamers[0].getA()<=maxA+range){
 				for(int k = 0 ; k<((int)tries); k++){
@@ -116,7 +117,7 @@ public class Game {
 				}
 				//final printing
 				
-				if((theseus+minotaur+ties)==((int)tries)){
+				/*if((theseus+minotaur+ties)==((int)tries)){
 					System.out.println("\n");
 					System.out.println("Successfully ran " + (int)tries + " times");
 					System.out.println();
@@ -128,18 +129,19 @@ public class Game {
 				}
 				else{
 					System.out.println("Error... Ran " + (theseus+minotaur+ties) + " times.");
-				}
+				}*/
+				System.out.println("(" + gamers[0].getA()+", " + 100*theseus/tries+")");
 				if(maxWins<theseus){
 					maxWins = theseus;
 					maxWinRate = 100*theseus/tries;
 				}
-				gamers[0].setA(gamers[0].getA() + range/10);
+				gamers[0].setA(gamers[0].getA() + range/Math.pow(10, percision));
 				theseus = ties = minotaur = 0;
 			}
 			maxA = center;
 			range/=10;
 		}
-		System.out.println("Best a and winRate :\n(" + maxA + ", " + maxWinRate+")");
+		//System.out.println("Best a and winRate :\n(" + maxA + ", " + maxWinRate+")");
 	}
 
 }

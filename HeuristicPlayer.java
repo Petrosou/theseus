@@ -95,7 +95,7 @@ class HeuristicPlayer extends Player{
 
         if(name.equals("Theseus")){
             //Avoid revisiting a tile
-            if(blocksToWall != 0){
+            if(wallAbility != 0){
                 for(int i = 0; i<path.size(); ++i){
                     if(path.get(i)[4] == board.getTiles()[currentPos].neighborTileId(die, board.getN())){
                         penalty+=revisitPenalty;
