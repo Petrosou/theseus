@@ -39,7 +39,7 @@ public class Game {
 		int theseus, minotaur, ties;
 		theseus = minotaur = ties = 0;
 		//Times ran declared here
-		double tries = 1000000;
+		double tries = 100000;
 		int maxWins = -1;
 		double center = 0;
 		double maxA = 0;
@@ -48,7 +48,7 @@ public class Game {
 		double maxWinRate = 0;
 		while(range>1){
 			gamers[0].setA(center-range);
-			while(gamers[0].getA()<maxA+range){
+			while(gamers[0].getA()<=maxA+range){
 				for(int k = 0 ; k<((int)tries); k++){
 					do{
 						game.setRound(game.getRound() + 1);
@@ -138,7 +138,7 @@ public class Game {
 			maxA = center;
 			range/=10;
 		}
-		System.out.println("Best a and winRate :\n(" + gamers[0].getA()+", " + maxWinRate+")");
+		System.out.println("Best a and winRate :\n(" + maxA + ", " + maxWinRate+")");
 	}
 
 }
