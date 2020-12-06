@@ -42,12 +42,12 @@ public class Game {
 		double tries = 100000;
 		double center = 0;
 		double range = 1;
-		int percision = 1;
+		int percision = 1; // Divide range in 10 intervals percision times
 
 		double maxA = 0;
 		int maxWins = -1;
 		double maxWinRate = 0;
-		while(range>range/Math.pow(10, percision)){
+		for(int i = 0; i<percision; ++i){
 			gamers[0].setA(center-range);
 			while(gamers[0].getA()<=maxA+range){
 				for(int k = 0 ; k<((int)tries); k++){

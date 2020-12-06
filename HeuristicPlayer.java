@@ -4,7 +4,7 @@ class HeuristicPlayer extends Player{
     private int ability;
     private int wallAbility;
     private double a = 0;
-    private double revisitedPenalty = 0.1;
+    private double revisitPenalty = 0.001;
 
     HeuristicPlayer(){
         super();
@@ -98,7 +98,7 @@ class HeuristicPlayer extends Player{
             if(blocksToWall != 0){
                 for(int i = 0; i<path.size(); ++i){
                     if(path.get(i)[4] == board.getTiles()[currentPos].neighborTileId(die, board.getN())){
-                        penalty+=revisitedPenalty;
+                        penalty+=revisitPenalty;
                         break;
                     }
                 }
@@ -132,7 +132,7 @@ class HeuristicPlayer extends Player{
         //avoid back and forth movements
         if(!path.isEmpty()){
             if((path.get(path.size()-1)[0]%4 == die%4) && (path.get(path.size()-1)[0] != die)){
-                penalty+=revisitedPenalty;
+                penalty+=revisitPenalty;
             }
         }
         if(wallAbility != 0){
