@@ -4,6 +4,7 @@ class HeuristicPlayer extends Player{
     private int ability;
     private int wallAbility;
     private double a = 0;
+    private double revisited = 0;
 
     HeuristicPlayer(){
         super();
@@ -75,7 +76,7 @@ class HeuristicPlayer extends Player{
         nId = board.getTiles()[currentPos].getTileId();
         for(int i = 0; i<wallAbility; ++i){
             //Interfering wall
-            if(board.getTiles()[nId].getUp()) {
+            if(board.getTiles()[nId].getWallInDirection(die)) {
                 blocksToWall = i;
                 break;
             }
