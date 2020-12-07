@@ -1,6 +1,6 @@
 /**
-Σουλίδης Πέτρος 9971 petrosis@ece.auth.gr
-Τερζίδης Αλέξανδρος 10072 terzidisa@ece.auth.gr
+οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ 9971 petrosis@ece.auth.gr
+οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ 10072 terzidisa@ece.auth.gr
 */
 
 public class Board {
@@ -82,6 +82,7 @@ public class Board {
 		this.supplies = supplies;
 	}
 	
+
 	//special functions
 	public void createTile(){
 		int counter;			//number of walls on a tile

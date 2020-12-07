@@ -131,6 +131,25 @@ public class Tile {
 			return false;
 		}
 	}
+
+public void setWallInDirection(int die, boolean set){
+	switch(die){
+		case 1:
+			setUp(set);
+			break;
+		case 3:
+			setRight(set);
+			break;
+		case 5:
+			setDown(set);
+			break;
+		case 7:
+			setLeft(set);
+			break;
+	}
+	return;
+}
+
 	public int distance(Tile tile){
 		return Math.abs(x-tile.x) + Math.abs(y-tile.y);
 	}

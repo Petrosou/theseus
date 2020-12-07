@@ -8,12 +8,14 @@ class HeuristicPlayer extends Player{
     private double revisitPenalty = 0.001;
     private double a;
     private ArrayList<Integer> supplyTileIds = new ArrayList<>(0);
+    private Tile[] playerMap;
 
     HeuristicPlayer(){
         super();
         path = new ArrayList<>(0);
         ability = 3;
         wallAbility = false;
+        playerMap = new Tile[board.getN()*board.getN()];
     }
 
     HeuristicPlayer(int playerId, String name, Board board, int score, int x, int y, ArrayList<Integer[]> path, int ability, boolean wallAbility){
@@ -21,6 +23,26 @@ class HeuristicPlayer extends Player{
         this.path = path;
         this.ability = ability;
         this.wallAbility = wallAbility;
+
+
+        int N = board.getN();
+        playerMap = new Tile[board.getN()*board.getN()];
+        for(int i = 0; i <= N * N - 1; i++){
+            playerMap[i] = new Tile(i, i/N, i%N, false, false, false, false);
+			if(i / N == 0) {
+				playerMap[i].setDown(true);
+			}
+			else if(i / N == N - 1) {
+				playerMap[i].setUp(true);
+			}
+			
+			if(i % N == 0) {
+				playerMap[i].setLeft(true);
+			}
+			else if(i % N == N - 1) {
+				playerMap[i].setRight(true);
+			}
+		}
     }
 
     public void setAbility(int ability){
@@ -50,9 +72,14 @@ class HeuristicPlayer extends Player{
     public double getA(){
         return a;
     }
+
+    public Tile[] getPlayerMap(){
+        return playerMap;
+    }
+
     private int[] seeAround(int currentPos, int opponentPos, int die){
         int blocksToOpponent = Integer.MAX_VALUE, blocksToSupply = Integer.MAX_VALUE, blocksToWall = -1;
-        int nId = board.getTiles()[currentPos].getTileId();
+        int nId = currentPos;
         for(int i = 0; i<ability; ++i){
             //Interfering wall
             if(board.getTiles()[nId].getWallInDirection(die)) {
@@ -80,7 +107,8 @@ class HeuristicPlayer extends Player{
                         supplyTileIds.add(nId);
                     }
                 }
-
+            
+             
             //Enough data collected
             if(blocksToOpponent != Integer.MAX_VALUE && blocksToSupply != Integer.MAX_VALUE)
                 break;
@@ -91,6 +119,12 @@ class HeuristicPlayer extends Player{
                 blocksToWall = 0;
             }
         }
+
+        if(blocksToWall != -1 && blocksToWall != Integer.MAX_VALUE){
+            playerMap[nId].setWallInDirection(die, true);
+        }
+
+
         int[] tempArray = {blocksToSupply, blocksToOpponent, blocksToWall};
         return tempArray;
     }

@@ -87,7 +87,7 @@ public class Game {
 			
 		}while(game.getRound() < n);		//n rounds -> 2n plays
 
-		gamers[0].statistics();
+		//gamers[0].statistics();
 
 		//Tie
 		if(game.getRound() == n && winnerIdx == -1) {
@@ -101,6 +101,19 @@ public class Game {
 				System.out.println("And the winner is " + gamers[winnerIdx].getName() + ", they won " + gamers[1 - winnerIdx].getName() + " " + gamers[winnerIdx].getScore() + " - " + gamers[1-winnerIdx].getScore()+"!");
 			}
 		}
+
+		Board map = new Board(N, S, W);
+		map.setTiles(gamers[0].getPlayerMap());
+		map.setSupplies(board.getSupplies());
+
+		String[][] repBoard = map.getStringRepresentation(0, N*N-1);
+		for(int i = 0 ; i <= 2 * N ; i++) {
+			for(int j = 0;j <= N - 1 ; j++) {
+				System.out.print(repBoard[i][j]);
+			}
+		}
+		System.out.println("\n");
+
 
 	}
 
