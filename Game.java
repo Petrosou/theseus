@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 /**
- * Σουλίδης Πέτρος 9971 petrosis@ece.auth.gr Τερζίδης Αλέξανδρος 10072
+ * οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ 9971 petrosis@ece.auth.gr οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ 10072
  * terzidisa@ece.auth.gr
  */
 
@@ -29,7 +29,7 @@ public class Game {
 	
 	public static void main(String[] args) {
 		Game game = new Game();
-		final int N = 15, S = 4, W = 100 + (int)(Math.random()*6), n = 100;
+		final int N = 11, S = 4, W = 50 + (int)(Math.random()*6), n = 100;
 		Board board = new Board(N, S, W);
 		board.createBoard();
 		HeuristicPlayer[] gamers = new HeuristicPlayer[2];

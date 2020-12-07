@@ -1,6 +1,6 @@
 /**
-Σουλίδης Πέτρος 9971 petrosis@ece.auth.gr
-Τερζίδης Αλέξανδρος 10072 terzidisa@ece.auth.gr
+οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ 9971 petrosis@ece.auth.gr
+οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½οΏ½ 10072 terzidisa@ece.auth.gr
 */
 
 public class Tile {
@@ -129,6 +129,9 @@ public class Tile {
 		default:
 			System.out.println("Invalid argument for die: " + die);
 			return false;
+		}
 	}
-    }
+	public int distance(Tile tile){
+		return Math.abs(x-tile.x) + Math.abs(y-tile.y);
+	}
 }

@@ -7,6 +7,7 @@ class HeuristicPlayer extends Player{
     private boolean wallAbility;
     private double revisitPenalty = 0.001;
     private double a;
+    private ArrayList<Integer> supplyTileIds = new ArrayList<>(0);
 
     HeuristicPlayer(){
         super();
@@ -64,9 +65,21 @@ class HeuristicPlayer extends Player{
             }
 
             //Supply
-            for(int j = 0;  j< board.getS(); ++j) 
-                if(nId == board.getSupplies()[j].getSupplyTileId() && board.getSupplies()[j].isObtainable() && blocksToSupply == Integer.MAX_VALUE)
+            for(int j = 0;  j<board.getS(); ++j) 
+                if(nId == board.getSupplies()[j].getSupplyTileId() && board.getSupplies()[j].isObtainable() && blocksToSupply == Integer.MAX_VALUE){
                     blocksToSupply = i + 1;
+                    //Add only new supply to supplyTileIds
+                    boolean newSupply = true;
+                    for(int k = 0; k<supplyTileIds.size(); ++k){
+                        if(supplyTileIds.get(k) == nId){
+                            newSupply = false;
+                            break;
+                        } 
+                    }
+                    if(newSupply){
+                        supplyTileIds.add(nId);
+                    }
+                }
 
             //Enough data collected
             if(blocksToOpponent != Integer.MAX_VALUE && blocksToSupply != Integer.MAX_VALUE)
@@ -84,52 +97,67 @@ class HeuristicPlayer extends Player{
     
     public double evaluate(int currentPos, int opponentPos, int die){
         int[] observation = seeAround(currentPos, opponentPos, die);
-        int blocksToSupply = observation[0];
+        int blocksToClosestSupply = Integer.MAX_VALUE;
         int blocksToOpponent = observation[1];
         int blocksToWall = observation[2];
         double penalty = 0;
 
+        //Approach supplies
+        if(!board.getTiles()[currentPos].getWallInDirection(die)){
+            int neighborTileId = board.getTiles()[currentPos].neighborTileId(die, board.getN());
+            Tile neighbor = board.getTiles()[neighborTileId];
+            for(int i = 0; i<supplyTileIds.size(); ++i){
+                if(blocksToClosestSupply>neighbor.distance(board.getTiles()[supplyTileIds.get(i)]) + 1)
+                    blocksToClosestSupply = neighbor.distance(board.getTiles()[supplyTileIds.get(i)]) + 1;
+            }
+        }
+        
+
         if(name.equals("Theseus")){
             //Avoid revisiting a tile
+            int visits = 0;
             for(int i = 0; i<path.size(); ++i){
                 if(path.get(i)[4] == board.getTiles()[currentPos].neighborTileId(die, board.getN())){
                     penalty+=revisitPenalty;
-                    break;
                 }
             }
             ////Special case MS
-            if(blocksToOpponent == 1 && blocksToSupply == 1){
+            if(blocksToOpponent == 1 && blocksToClosestSupply == 1){
                 if(score == board.getS() - 1){
                     return Double.POSITIVE_INFINITY;
                 }
                 return Double.NEGATIVE_INFINITY;
             }
+            //Minotaur is one block away
+            if(blocksToOpponent == 1 && wallAbility)
+                if(blocksToWall == 0)
+                    return Double.NEGATIVE_INFINITY;
             //Case losing turn
             if(wallAbility && blocksToWall == 0)
                     return -10;
             //Minotaur is two blocks away
             if(blocksToOpponent == 2){
-                if(score == board.getS() - 1 && blocksToSupply == 1)
+                if(score == board.getS() - 1 && blocksToClosestSupply == 1)
                     return Double.POSITIVE_INFINITY;
                 else
                     return Double.NEGATIVE_INFINITY;
             }
             //General case
-            return 0.5/(blocksToSupply - 1) - 1.0/(blocksToOpponent - 1)-penalty;
+            return 0.5/(blocksToClosestSupply - 1) - 1.0/(blocksToOpponent - 1)-penalty;
         }
         //This is only for Minotaur
 
         //avoid back and forth movements
         if(!path.isEmpty()){
             if((path.get(path.size()-1)[0]%4 == die%4) && (path.get(path.size()-1)[0] != die)){
-                penalty+=revisitPenalty;
+                penalty+=a;
             }
         }
         //Case losing turn
         if(wallAbility && blocksToWall == 0)
             return -10;
         //General case
-        return 0.5/(blocksToSupply) + 1.0/(blocksToOpponent - 1)-penalty;  //there's not -1 so bloscksToOpponent is more important
+        return 0.5/(blocksToClosestSupply) + 1.0/(blocksToOpponent - 1)-penalty;  //there's not -1 so bloscksToOpponent is more important
     }
 
     //returns the move that has the greatest value
@@ -146,29 +174,19 @@ class HeuristicPlayer extends Player{
                 maxValueDie = 2*i + 1;
             }
         }
-        if(name.equals("Theseus")) {
-	        for(int i = 0 ; i< 4; i++) {
-	        	switch(i){
-	        	case 0:
-	        		System.out.println("Up eval: " + movesValues[i]);
-	        		break;
-	        	case 1:
-	        		System.out.println("Right eval: " + movesValues[i]);
-	        		break;
-	        	case 2:
-	        		System.out.println("Down eval: " + movesValues[i]);
-	        		break;
-	        	case 3:
-	        		System.out.println("Left eval: " + movesValues[i]);
-	        		break;
-	        	}
-	        }
-        }
-        
+
         int[] observation = seeAround(currentPos, opponentPos, maxValueDie);
         Integer[] tempArray = {maxValueDie, 0, observation[0] - 1, observation[1] - 1, currentPos};
-        if(name.equals("Theseus") && maxValue == Double.POSITIVE_INFINITY)
+        if(name.equals("Theseus") && maxValue == Double.POSITIVE_INFINITY){
                 tempArray[1] = 1;
+                //Remove collected supply
+                for(int i = 0; i<supplyTileIds.size(); ++i){
+                    if(supplyTileIds.get(i) == board.getTiles()[currentPos].neighborTileId(maxValueDie, board.getN())){
+                        supplyTileIds.remove(i);
+                        break;
+                    }
+                }
+        }
         path.add(tempArray);
         return maxValueDie;
     }
