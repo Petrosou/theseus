@@ -1,10 +1,9 @@
 import java.util.ArrayList;
 
-import javax.lang.model.util.ElementScanner14;
 class HeuristicPlayer extends Player{
     private ArrayList<Integer[]> path;      //player moves' description [int die, int pickedSupply, int blocksToSupply, int blocksToOpponent, tileId]
     private int ability;
-    private boolean wallAbility;
+    private int wallAbility;
     private double revisitPenalty = 0.001;
     private double a;
     private ArrayList<Integer> supplyTileIds = new ArrayList<>(0);
@@ -14,11 +13,11 @@ class HeuristicPlayer extends Player{
         super();
         path = new ArrayList<>(0);
         ability = 3;
-        wallAbility = false;
+        wallAbility = 0;
         playerMap = new Tile[board.getN()*board.getN()];
     }
 
-    HeuristicPlayer(int playerId, String name, Board board, int score, int x, int y, ArrayList<Integer[]> path, int ability, boolean wallAbility){
+    HeuristicPlayer(int playerId, String name, Board board, int score, int x, int y, ArrayList<Integer[]> path, int ability, int wallAbility){
         super(playerId, name, board, score, x, y);
         this.path = path;
         this.ability = ability;
@@ -53,11 +52,11 @@ class HeuristicPlayer extends Player{
         return ability;
     }
 
-    public void setWallAbility(boolean wallAbility){
-        this.wallAbility = wallAbility;
+    public void setWallAbility(int wallAbility){
+        this.wallAbility = ability;
     }
 
-    public boolean getWallAbility(){
+    public int getWallAbility(){
         return wallAbility;
     }
 
@@ -113,14 +112,24 @@ class HeuristicPlayer extends Player{
             if(blocksToOpponent != Integer.MAX_VALUE && blocksToSupply != Integer.MAX_VALUE)
                 break;
         }
-        //Wall
-        if(wallAbility){
-            if(board.getTiles()[currentPos].getWallInDirection(die)) {
-                blocksToWall = 0;
+      //BlocksToWall
+        nId = currentPos;
+        for(int i = 0; i<=wallAbility; ++i){
+            //Interfering wall
+            if(board.getTiles()[nId].getWallInDirection(die)) {
+                blocksToWall = i;
+                break;
             }
+            nId = board.getTiles()[nId].neighborTileId(die, board.getN());
         }
-
-        if(blocksToWall != -1 && blocksToWall != Integer.MAX_VALUE){
+        
+        //Find the tileId of the tile with wall
+        nId = currentPos;
+        for(int i = 0; i<blocksToWall; ++i) {
+        	nId = board.getTiles()[nId].neighborTileId(die, board.getN());
+        }
+        
+        if(blocksToWall != -1){
             playerMap[nId].setWallInDirection(die, true);
         }
 
@@ -149,7 +158,6 @@ class HeuristicPlayer extends Player{
 
         if(name.equals("Theseus")){
             //Avoid revisiting a tile
-            int visits = 0;
             for(int i = 0; i<path.size(); ++i){
                 if(path.get(i)[4] == board.getTiles()[currentPos].neighborTileId(die, board.getN())){
                     penalty+=revisitPenalty;
@@ -163,11 +171,11 @@ class HeuristicPlayer extends Player{
                 return Double.NEGATIVE_INFINITY;
             }
             //Minotaur is one block away
-            if(blocksToOpponent == 1 && wallAbility)
+            if(blocksToOpponent == 1 && wallAbility != -1)
                 if(blocksToWall == 0)
                     return Double.NEGATIVE_INFINITY;
             //Case losing turn
-            if(wallAbility && blocksToWall == 0)
+            if(wallAbility != -1 && blocksToWall == 0)
                     return -10;
             //Minotaur is two blocks away
             if(blocksToOpponent == 2){
@@ -188,7 +196,7 @@ class HeuristicPlayer extends Player{
             }
         }
         //Case losing turn
-        if(wallAbility && blocksToWall == 0)
+        if(wallAbility != -1 && blocksToWall == 0)
             return -10;
         //General case
         return 0.5/(blocksToClosestSupply) + 1.0/(blocksToOpponent - 1)-penalty;  //there's not -1 so bloscksToOpponent is more important
