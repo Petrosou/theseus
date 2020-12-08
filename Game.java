@@ -101,17 +101,6 @@ public class Game {
 				System.out.println("And the winner is " + gamers[winnerIdx].getName() + ", they won " + gamers[1 - winnerIdx].getName() + " " + gamers[winnerIdx].getScore() + " - " + gamers[1-winnerIdx].getScore()+"!");
 			}
 		}
-
-
-		String[][] repBoard = gamers[0].getPlayerMap().getStringRepresentation(0, N*N/2);
-		for(int i = 0 ; i <= 2 * N ; i++) {
-			for(int j = 0;j <= N - 1 ; j++) {
-				System.out.print(repBoard[i][j]);
-			}
-		}
-		System.out.println("\n");
-
-
 	}
 
 }
