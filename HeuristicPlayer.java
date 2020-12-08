@@ -1,11 +1,9 @@
 import java.util.ArrayList;
-
 class HeuristicPlayer extends Player{
     private ArrayList<Integer[]> path;      //player moves' description [int die, int pickedSupply, int blocksToSupply, int blocksToOpponent, tileId]
     private int ability;
     private int wallAbility;
-    private double revisitPenalty = 0.001;
-    private double a;
+    private double revisitPenalty = 0.01;
     private Board playerMap;
 
     HeuristicPlayer(){
@@ -64,14 +62,6 @@ class HeuristicPlayer extends Player{
         path.clear();
     }
     
-    public void setA(double a){
-        this.a = a;
-    }
-    
-    public double getA(){
-        return a;
-    }
-
     public Board getPlayerMap(){
         return playerMap;
     }
@@ -168,6 +158,16 @@ class HeuristicPlayer extends Player{
             }
         }
         
+         
+        if(!board.getTiles()[currentPos].getWallInDirection(die)){
+            int neighborTileId = board.getTiles()[currentPos].neighborTileId(die, board.getN());
+            Tile neighbor = board.getTiles()[neighborTileId];
+            for(int i = 0; i<playerMap.getTiles().length; ++i){
+            	if(playerMap.getTiles()[i].hasSupply())
+            		continue;       
+            penalty+=0.001/(neighbor.distance(playerMap.getTiles()[i])+1);
+            }
+        }
 
         if(name.equals("Theseus")){
             //Avoid revisiting a tile
@@ -205,7 +205,7 @@ class HeuristicPlayer extends Player{
         //avoid back and forth movements
         if(!path.isEmpty()){
             if((path.get(path.size()-1)[0]%4 == die%4) && (path.get(path.size()-1)[0] != die)){
-                penalty+=a;
+                penalty+=revisitPenalty;
             }
         }
         //Case losing turn
@@ -247,7 +247,7 @@ class HeuristicPlayer extends Player{
     }
 
     public void statistics(){
-        //System.out.println("\nStatistics of " + name + ":");
+        System.out.println("\nStatistics of " + name + ":");
         int ups, rights, downs, lefts, currentRound;
         ups = rights = downs = lefts = 0;
         for(int i = 0; i<path.size(); ++i){

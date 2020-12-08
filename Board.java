@@ -124,6 +124,7 @@ public class Board {
 				if(counter >= 2) {
 					break;
 				}
+				counter = 0;
 				//Neighbor tile
 				counter = (tiles[randomTileId + N].getLeft())?(counter + 1):counter;
 				counter = (tiles[randomTileId + N].getUp())?(counter + 1):counter;
@@ -147,7 +148,7 @@ public class Board {
 				if(counter >= 2) {
 					break;
 				}
-				
+				counter = 0;
 				//Neighbor tile
 				counter = (tiles[randomTileId+1].getUp())?(counter + 1):counter;
 				counter = (tiles[randomTileId+1].getDown())?(counter + 1):counter;
@@ -171,7 +172,7 @@ public class Board {
 				if(counter >= 2) {
 					break;
 				}
-				
+				counter = 0;
 				//Neighbor tile
 				counter = (tiles[randomTileId - N].getRight())?(counter + 1):counter;
 				counter = (tiles[randomTileId - N].getDown())?(counter + 1):counter;
@@ -195,12 +196,12 @@ public class Board {
 				if(counter >= 2) {
 					break;
 				}
-				
+				counter = 0;
 				//Neighbor tile
 				counter = (tiles[randomTileId - 1].getUp())?(counter + 1):counter;
 				counter = (tiles[randomTileId - 1].getLeft())?(counter + 1):counter;
 				counter = (tiles[randomTileId - 1].getDown())?(counter + 1):counter;
-				if(counter >=2 ) {
+				if(counter >= 2) {
 					break;
 				}
 				tiles[randomTileId].setLeft(true);
