@@ -1,7 +1,4 @@
-/**
-Σουλίδης Πέτρος 9971 petrosis@ece.auth.gr
-Τερζίδης Αλέξανδρος 10072 terzidisa@ece.auth.gr
-*/
+
 
 public class Tile {
 	private int tileId;
@@ -11,7 +8,7 @@ public class Tile {
 	private boolean down;
 	private boolean left;
 	private boolean right;
-	
+	private boolean hasSupply;
 	public Tile() {
 		tileId = 0;
 		x = 0;
@@ -20,6 +17,7 @@ public class Tile {
 		down = false;
 		left = false;
 		right = false;
+		hasSupply = true;
 	}
 	
 	public Tile(int tileId, int x, int y, boolean up, boolean down, boolean left, boolean right) {
@@ -30,6 +28,7 @@ public class Tile {
 		this.down = down;
 		this.left = left;
 		this.right = right;
+		hasSupply = true;
 	}
 	
 	public Tile(Tile theTile) {
@@ -99,6 +98,14 @@ public class Tile {
 		this.right = right;
 	}
 	
+	public boolean hasSupply() {
+		return hasSupply;
+	}
+
+	public void setHasSupply(boolean hasSupply) {
+		this.hasSupply = hasSupply;
+	}
+
 	//Special functions
     public int neighborTileId(int die, int N) {
     	switch(die) {
@@ -129,6 +136,26 @@ public class Tile {
 		default:
 			System.out.println("Invalid argument for die: " + die);
 			return false;
+		}
 	}
-    }
+
+public void setWallInDirection(int die, boolean set){
+	switch(die){
+		case 1:
+			setUp(set);
+			break;
+		case 3:
+			setRight(set);
+			break;
+		case 5:
+			setDown(set);
+			break;
+		case 7:
+			setLeft(set);
+	}
+}
+
+	public int distance(Tile tile){
+		return Math.abs(x-tile.x) + Math.abs(y-tile.y);
+	}
 }
