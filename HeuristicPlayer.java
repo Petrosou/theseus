@@ -80,6 +80,7 @@ class HeuristicPlayer extends Player{
             if(board.getTiles()[nId].getWallInDirection(die)) {
                 break;
             }
+            board.getTiles()[nId].setHaveInfo(true);
             nId = board.getTiles()[nId].neighborTileId(die, board.getN());
             //Opponent
             if(opponentPos == nId){
@@ -87,26 +88,18 @@ class HeuristicPlayer extends Player{
             }
 
             //Supply
-            boolean foundSupply = false;
             for(int j = 0;  j<board.getS(); ++j) {
-            	if(nId == board.getSupplies()[j].getSupplyTileId()) {
-            		foundSupply = true;
+            	if(nId == board.getSupplies()[j].getSupplyTileId() && board.getSupplies()[j].isObtainable()) {
             		playerMap.getSupplies()[j].setSupplyId(j+1);
             		playerMap.getSupplies()[j].setX(board.getTiles()[nId].getX());
             		playerMap.getSupplies()[j].setY(board.getTiles()[nId].getY());
             		playerMap.getSupplies()[j].setSupplyTileId(nId);
-            		if(board.getSupplies()[j].isObtainable() ) {
-            			playerMap.getSupplies()[j].setObtainable(true);
-		                if(blocksToSupply == Integer.MAX_VALUE){
+            		playerMap.getSupplies()[j].setObtainable(true);
+		            if(blocksToSupply == Integer.MAX_VALUE){
 		                    blocksToSupply = i + 1;
-		                }
+		            }
             		}
             	}
-            }
-            if(!foundSupply) {
-        		playerMap.getTiles()[nId].setHasSupply(false);
-        	}
-             
             //Enough data collected
             if(blocksToOpponent != Integer.MAX_VALUE && blocksToSupply != Integer.MAX_VALUE)
                 break;
@@ -150,17 +143,6 @@ class HeuristicPlayer extends Player{
             }
         }
         
-        //Explore new places 
-        if(!board.getTiles()[currentPos].getWallInDirection(die)){
-            int neighborTileId = board.getTiles()[currentPos].neighborTileId(die, board.getN());
-            Tile neighbor = board.getTiles()[neighborTileId];
-            for(int i = 0; i<playerMap.getTiles().length; ++i){
-            	if(playerMap.getTiles()[i].hasSupply())
-            		continue;       
-            penalty+=0.001/(neighbor.distance(playerMap.getTiles()[i])+1);
-            }
-        }
-
         if(name.equals("Theseus")){
             //Avoid revisiting a tile
             for(int i = 0; i<path.size(); ++i){

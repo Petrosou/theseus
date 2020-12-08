@@ -11,7 +11,7 @@ public class Tile {
 	private boolean down;
 	private boolean left;
 	private boolean right;
-	private boolean hasSupply;
+	private boolean haveInfo;
 	public Tile() {
 		tileId = 0;
 		x = 0;
@@ -20,7 +20,7 @@ public class Tile {
 		down = false;
 		left = false;
 		right = false;
-		hasSupply = true;
+		haveInfo = true;
 	}
 	
 	public Tile(int tileId, int x, int y, boolean up, boolean down, boolean left, boolean right) {
@@ -31,7 +31,7 @@ public class Tile {
 		this.down = down;
 		this.left = left;
 		this.right = right;
-		hasSupply = true;
+		haveInfo = true;
 	}
 	
 	public Tile(Tile theTile) {
@@ -101,12 +101,12 @@ public class Tile {
 		this.right = right;
 	}
 	
-	public boolean hasSupply() {
-		return hasSupply;
+	public boolean haveInfo() {
+		return haveInfo;
 	}
 
-	public void setHasSupply(boolean hasSupply) {
-		this.hasSupply = hasSupply;
+	public void setHaveInfo(boolean haveInfo) {
+		this.haveInfo = haveInfo;
 	}
 
 	//Special functions
