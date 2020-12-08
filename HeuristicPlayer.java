@@ -8,7 +8,7 @@ import java.util.ArrayList;
 class HeuristicPlayer extends Player{
     private ArrayList<Integer[]> path;      //player moves' description [int die, int pickedSupply, int blocksToSupply, int blocksToOpponent, tileId]
     private int ability;
-    private int wallAbility;
+    private boolean wallAbility;
     private double revisitPenalty = 0.01;
     private Board playerMap;
 
@@ -16,11 +16,11 @@ class HeuristicPlayer extends Player{
         super();
         path = new ArrayList<>(0);
         ability = 3;
-        wallAbility = 0;
+        wallAbility = false;
         playerMap = new Board();
     }
 
-    HeuristicPlayer(int playerId, String name, Board board, int score, int x, int y, ArrayList<Integer[]> path, int ability, int wallAbility){
+    HeuristicPlayer(int playerId, String name, Board board, int score, int x, int y, ArrayList<Integer[]> path, int ability, boolean wallAbility){
         super(playerId, name, board, score, x, y);
         this.path = path;
         this.ability = ability;
@@ -56,11 +56,11 @@ class HeuristicPlayer extends Player{
         return ability;
     }
 
-    public void setWallAbility(int wallAbility){
-        this.wallAbility = ability;
+    public void setWallAbility(boolean wallAbility){
+        this.wallAbility = wallAbility;
     }
 
-    public int getWallAbility(){
+    public boolean getWallAbility(){
         return wallAbility;
     }
 
@@ -112,20 +112,9 @@ class HeuristicPlayer extends Player{
                 break;
         }
       //BlocksToWall
-        nId = currentPos;
-        for(int i = 0; i<=wallAbility; ++i){
-            //Interfering wall
-            if(board.getTiles()[nId].getWallInDirection(die)) {
-                blocksToWall = i;
-                break;
-            }
-            nId = board.getTiles()[nId].neighborTileId(die, board.getN());
-        }
-        
-        //Find the tileId of the tile with wall
-        nId = currentPos;
-        for(int i = 0; i<blocksToWall; ++i) {
-        	nId = board.getTiles()[nId].neighborTileId(die, board.getN());
+        //Interfering wall
+        if(board.getTiles()[currentPos].getWallInDirection(die)) {
+            blocksToWall = 0;
         }
         
         if(blocksToWall != -1){
@@ -137,9 +126,7 @@ class HeuristicPlayer extends Player{
             }
         }
 
-
-        int[] tempArray = {blocksToSupply, blocksToOpponent, blocksToWall};
-        return tempArray;
+        return new int[] {blocksToSupply, blocksToOpponent, blocksToWall};
     }
     
     public double evaluate(int currentPos, int opponentPos, int die){
@@ -190,11 +177,11 @@ class HeuristicPlayer extends Player{
                 return Double.NEGATIVE_INFINITY;
             }
             //Minotaur is one block away
-            if(blocksToOpponent == 1 && wallAbility != -1)
+            if(blocksToOpponent == 1 && wallAbility)
                 if(blocksToWall == 0)
                     return Double.NEGATIVE_INFINITY;
             //Case losing turn
-            if(wallAbility != -1 && blocksToWall == 0)
+            if(wallAbility && blocksToWall == 0)
                     return -10;
             //Minotaur is two blocks away
             if(blocksToOpponent == 2){
@@ -215,7 +202,7 @@ class HeuristicPlayer extends Player{
             }
         }
         //Case losing turn
-        if(wallAbility != -1 && blocksToWall == 0)
+        if(wallAbility && blocksToWall == 0)
             return -10;
         //General case
         return 0.5/(blocksToClosestSupply) + 1.0/(blocksToOpponent - 1)-penalty;  //there's not -1 so bloscksToOpponent is more important
