@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-
 class HeuristicPlayer extends Player{
     private ArrayList<Integer[]> path;      //player moves' description [int die, int pickedSupply, int blocksToSupply, int blocksToOpponent, tileId]
     private int ability;
@@ -168,13 +167,13 @@ class HeuristicPlayer extends Player{
             }
         }
         
-        //Explore new places
+         
         if(!board.getTiles()[currentPos].getWallInDirection(die)){
             int neighborTileId = board.getTiles()[currentPos].neighborTileId(die, board.getN());
             Tile neighbor = board.getTiles()[neighborTileId];
             for(int i = 0; i<playerMap.getTiles().length; ++i){
             	if(playerMap.getTiles()[i].hasSupply())
-            		continue;
+            		continue;       
             penalty+=0.001/(neighbor.distance(playerMap.getTiles()[i])+1);
             }
         }

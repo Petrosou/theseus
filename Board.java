@@ -83,13 +83,8 @@ public class Board {
 	}
 	
 	//special functions
-	public void createTile(){
-		int counter;			//number of walls on a tile
-		int check = 0;			//number of inner walls currently built
-		int randomTileId, randomDirection;
-		//initializer
-		
-		//The outline
+
+	private void createOutline(){
 		for(int i = 0; i <= N * N - 1; i++) {
 			if(i / N == 0) {
 				tiles[i].setDown(true);
@@ -105,6 +100,15 @@ public class Board {
 				tiles[i].setRight(true);
 			}
 		}
+	}
+	public void createTile(){
+		int counter;			//number of walls on a tile
+		int check = 0;			//number of inner walls currently built
+		int randomTileId, randomDirection;
+		//initializer
+		
+		//The outline
+		createOutline();
 		
 		//The inner walls
 		while (check<W) {
@@ -123,6 +127,7 @@ public class Board {
 				if(counter >= 2) {
 					break;
 				}
+				counter = 0;
 				//Neighbor tile
 				counter = (tiles[randomTileId + N].getLeft())?(counter + 1):counter;
 				counter = (tiles[randomTileId + N].getUp())?(counter + 1):counter;
@@ -146,6 +151,7 @@ public class Board {
 				if(counter >= 2) {
 					break;
 				}
+				counter = 0;
 				
 				//Neighbor tile
 				counter = (tiles[randomTileId+1].getUp())?(counter + 1):counter;
@@ -170,7 +176,7 @@ public class Board {
 				if(counter >= 2) {
 					break;
 				}
-				
+				counter = 0;
 				//Neighbor tile
 				counter = (tiles[randomTileId - N].getRight())?(counter + 1):counter;
 				counter = (tiles[randomTileId - N].getDown())?(counter + 1):counter;
@@ -194,12 +200,12 @@ public class Board {
 				if(counter >= 2) {
 					break;
 				}
-				
+				counter = 0;
 				//Neighbor tile
 				counter = (tiles[randomTileId - 1].getUp())?(counter + 1):counter;
 				counter = (tiles[randomTileId - 1].getLeft())?(counter + 1):counter;
 				counter = (tiles[randomTileId - 1].getDown())?(counter + 1):counter;
-				if(counter >=2 ) {
+				if(counter >= 2) {
 					break;
 				}
 				tiles[randomTileId].setLeft(true);
@@ -248,7 +254,16 @@ public class Board {
 			tiles[i].setUp(false);
 			tiles[i].setLeft(false);
 			tiles[i].setDown(false);
+			tiles[i].setHasSupply(true);
 		}
+		for(int i = 0; i<S; ++i){
+			supplies[i].setSupplyId(0);
+			supplies[i].setSupplyTileId(0);
+			supplies[i].setX(0);
+			supplies[i].setY(0);
+			supplies[i].setObtainable(false);
+		}
+		//createOutline();
 	}
 
 	public String[][] getStringRepresentation(int theseusTile, int minotaurTile){
