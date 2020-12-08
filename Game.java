@@ -1,9 +1,9 @@
-import java.util.ArrayList;
-
 /**
- * �������� ������ 9971 petrosis@ece.auth.gr �������� ���������� 10072
- * terzidisa@ece.auth.gr
+ * Soulidis Petros 9971 petrosis@ece.auth.gr
+ * Terzidis Alexandros 10072 terzidisa@ece.auth.gr
  */
+
+import java.util.ArrayList;
 
 public class Game {
 	private int round;

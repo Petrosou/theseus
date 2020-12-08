@@ -1,4 +1,7 @@
-
+/**
+ * Soulidis Petros 9971 petrosis@ece.auth.gr
+ * Terzidis Alexandros 10072 terzidisa@ece.auth.gr
+ */
 
 public class Tile {
 	private int tileId;

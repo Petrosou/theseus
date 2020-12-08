@@ -1,7 +1,7 @@
 /**
-Σουλίδης Πέτρος 9971 petrosis@ece.auth.gr
-Τερζίδης Αλέξανδρος 10072 terzidisa@ece.auth.gr
-*/
+ * Soulidis Petros 9971 petrosis@ece.auth.gr
+ * Terzidis Alexandros 10072 terzidisa@ece.auth.gr
+ */
 
 public class Supply {
 	

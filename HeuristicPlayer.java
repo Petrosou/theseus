@@ -1,4 +1,10 @@
+/**
+ * Soulidis Petros 9971 petrosis@ece.auth.gr
+ * Terzidis Alexandros 10072 terzidisa@ece.auth.gr
+ */
+
 import java.util.ArrayList;
+
 class HeuristicPlayer extends Player{
     private ArrayList<Integer[]> path;      //player moves' description [int die, int pickedSupply, int blocksToSupply, int blocksToOpponent, tileId]
     private int ability;
