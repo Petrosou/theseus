@@ -73,7 +73,7 @@ class HeuristicPlayer extends Player{
     }
 
     private int[] seeAround(int currentPos, int opponentPos, int die){
-        int blocksToOpponent = Integer.MAX_VALUE, blocksToSupply = Integer.MAX_VALUE, blocksToWall = -1;
+        int blocksToOpponent = Integer.MAX_VALUE, blocksToSupply = Integer.MAX_VALUE, blocksToWall = Integer.MAX_VALUE;
         int nId = currentPos;
         for(int i = 0; i<ability; ++i){
             //Interfering wall
@@ -111,18 +111,17 @@ class HeuristicPlayer extends Player{
             if(blocksToOpponent != Integer.MAX_VALUE && blocksToSupply != Integer.MAX_VALUE)
                 break;
         }
-      //BlocksToWall
+        //BlocksToWall
         //Interfering wall
-        if(board.getTiles()[currentPos].getWallInDirection(die)) {
-            blocksToWall = 0;
-        }
-        
-        if(blocksToWall != -1){
-            playerMap.getTiles()[nId].setWallInDirection(die, true);
-            int nnId = playerMap.getTiles()[nId].neighborTileId(die, playerMap.getN());
-            if(0<nnId && nnId<playerMap.getN()*playerMap.getN()-2) {
-            	int oppositeDie = (die == 1)?(5):(die == 5)?(1):(die == 3)?(7):(3);
-            	playerMap.getTiles()[nnId].setWallInDirection(oppositeDie, true);
+        if(wallAbility){
+            if(board.getTiles()[currentPos].getWallInDirection(die)) {
+                blocksToWall = 0;
+                playerMap.getTiles()[currentPos].setWallInDirection(die, true);
+                nId = playerMap.getTiles()[currentPos].neighborTileId(die, playerMap.getN());
+                if(0<nId && nId<playerMap.getN()*playerMap.getN()-2) {
+                    int oppositeDie = (die == 1)?(5):(die == 5)?(1):(die == 3)?(7):(3);
+                    playerMap.getTiles()[nId].setWallInDirection(oppositeDie, true);
+                }
             }
         }
 
@@ -151,7 +150,7 @@ class HeuristicPlayer extends Player{
             }
         }
         
-         
+        //Explore new places 
         if(!board.getTiles()[currentPos].getWallInDirection(die)){
             int neighborTileId = board.getTiles()[currentPos].neighborTileId(die, board.getN());
             Tile neighbor = board.getTiles()[neighborTileId];
@@ -177,11 +176,10 @@ class HeuristicPlayer extends Player{
                 return Double.NEGATIVE_INFINITY;
             }
             //Minotaur is one block away
-            if(blocksToOpponent == 1 && wallAbility)
-                if(blocksToWall == 0)
+            if(blocksToOpponent == 1 && blocksToWall == 0)
                     return Double.NEGATIVE_INFINITY;
             //Case losing turn
-            if(wallAbility && blocksToWall == 0)
+            if(blocksToWall == 0)
                     return -10;
             //Minotaur is two blocks away
             if(blocksToOpponent == 2){
@@ -202,7 +200,7 @@ class HeuristicPlayer extends Player{
             }
         }
         //Case losing turn
-        if(wallAbility && blocksToWall == 0)
+        if(blocksToWall == 0)
             return -10;
         //General case
         return 0.5/(blocksToClosestSupply) + 1.0/(blocksToOpponent - 1)-penalty;  //there's not -1 so bloscksToOpponent is more important
