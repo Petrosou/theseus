@@ -6,15 +6,14 @@ class HeuristicPlayer extends Player{
     private int wallAbility;
     private double revisitPenalty = 0.001;
     private double a;
-    private ArrayList<Integer> supplyTileIds = new ArrayList<>(0);
-    private Tile[] playerMap;
+    private Board playerMap;
 
     HeuristicPlayer(){
         super();
         path = new ArrayList<>(0);
         ability = 3;
         wallAbility = 0;
-        playerMap = new Tile[board.getN()*board.getN()];
+        playerMap = new Board();
     }
 
     HeuristicPlayer(int playerId, String name, Board board, int score, int x, int y, ArrayList<Integer[]> path, int ability, int wallAbility){
@@ -22,26 +21,27 @@ class HeuristicPlayer extends Player{
         this.path = path;
         this.ability = ability;
         this.wallAbility = wallAbility;
+        playerMap = new Board( board.getN(), board.getS(), board.getW());
 
-
-        int N = board.getN();
-        playerMap = new Tile[board.getN()*board.getN()];
+        int N = playerMap.getN();
         for(int i = 0; i <= N * N - 1; i++){
-            playerMap[i] = new Tile(i, i/N, i%N, false, false, false, false);
+            playerMap.getTiles()[i] = new Tile(i, i/N, i%N, false, false, false, false);
 			if(i / N == 0) {
-				playerMap[i].setDown(true);
+				playerMap.getTiles()[i].setDown(true);
 			}
 			else if(i / N == N - 1) {
-				playerMap[i].setUp(true);
+				playerMap.getTiles()[i].setUp(true);
 			}
 			
 			if(i % N == 0) {
-				playerMap[i].setLeft(true);
+				playerMap.getTiles()[i].setLeft(true);
 			}
 			else if(i % N == N - 1) {
-				playerMap[i].setRight(true);
+				playerMap.getTiles()[i].setRight(true);
 			}
 		}
+        for(int i = 0; i<playerMap.getS(); ++i)
+        	playerMap.getSupplies()[i] = new Supply();
     }
 
     public void setAbility(int ability){
@@ -72,7 +72,7 @@ class HeuristicPlayer extends Player{
         return a;
     }
 
-    public Tile[] getPlayerMap(){
+    public Board getPlayerMap(){
         return playerMap;
     }
 
@@ -91,22 +91,25 @@ class HeuristicPlayer extends Player{
             }
 
             //Supply
-            for(int j = 0;  j<board.getS(); ++j) 
-                if(nId == board.getSupplies()[j].getSupplyTileId() && board.getSupplies()[j].isObtainable() && blocksToSupply == Integer.MAX_VALUE){
-                    blocksToSupply = i + 1;
-                    //Add only new supply to supplyTileIds
-                    boolean newSupply = true;
-                    for(int k = 0; k<supplyTileIds.size(); ++k){
-                        if(supplyTileIds.get(k) == nId){
-                            newSupply = false;
-                            break;
-                        } 
-                    }
-                    if(newSupply){
-                        supplyTileIds.add(nId);
-                    }
-                }
-            
+            boolean foundSupply = false;
+            for(int j = 0;  j<board.getS(); ++j) {
+            	if(nId == board.getSupplies()[j].getSupplyTileId()) {
+            		foundSupply = true;
+            		playerMap.getSupplies()[j].setSupplyId(j+1);
+            		playerMap.getSupplies()[j].setX(board.getTiles()[nId].getX());
+            		playerMap.getSupplies()[j].setY(board.getTiles()[nId].getY());
+            		playerMap.getSupplies()[j].setSupplyTileId(nId);
+            		if(board.getSupplies()[j].isObtainable() ) {
+            			playerMap.getSupplies()[j].setObtainable(true);
+		                if(blocksToSupply == Integer.MAX_VALUE){
+		                    blocksToSupply = i + 1;
+		                }
+            		}
+            	}
+            }
+            if(!foundSupply) {
+        		playerMap.getTiles()[nId].setHasSupply(false);
+        	}
              
             //Enough data collected
             if(blocksToOpponent != Integer.MAX_VALUE && blocksToSupply != Integer.MAX_VALUE)
@@ -130,7 +133,12 @@ class HeuristicPlayer extends Player{
         }
         
         if(blocksToWall != -1){
-            playerMap[nId].setWallInDirection(die, true);
+            playerMap.getTiles()[nId].setWallInDirection(die, true);
+            int nnId = playerMap.getTiles()[nId].neighborTileId(die, playerMap.getN());
+            if(0<nnId && nnId<playerMap.getN()*playerMap.getN()-2) {
+            	int oppositeDie = (die == 1)?(5):(die == 5)?(1):(die == 3)?(7):(3);
+            	playerMap.getTiles()[nnId].setWallInDirection(oppositeDie, true);
+            }
         }
 
 
@@ -149,9 +157,14 @@ class HeuristicPlayer extends Player{
         if(!board.getTiles()[currentPos].getWallInDirection(die)){
             int neighborTileId = board.getTiles()[currentPos].neighborTileId(die, board.getN());
             Tile neighbor = board.getTiles()[neighborTileId];
-            for(int i = 0; i<supplyTileIds.size(); ++i){
-                if(blocksToClosestSupply>neighbor.distance(board.getTiles()[supplyTileIds.get(i)]) + 1)
-                    blocksToClosestSupply = neighbor.distance(board.getTiles()[supplyTileIds.get(i)]) + 1;
+            for(int i = 0; i<playerMap.getS(); ++i){
+            	if(playerMap.getSupplies()[i].getSupplyTileId() == 0)
+            		continue;
+            	Tile supplyTile = playerMap.getTiles()[playerMap.getSupplies()[i].getSupplyTileId()];
+            	if(board.getSupplies()[i].isObtainable()) {
+            		if(blocksToClosestSupply>neighbor.distance(supplyTile) + 1)
+            			blocksToClosestSupply = neighbor.distance(supplyTile) + 1;
+            	}
             }
         }
         
@@ -221,10 +234,10 @@ class HeuristicPlayer extends Player{
         Integer[] tempArray = {maxValueDie, 0, observation[0] - 1, observation[1] - 1, currentPos};
         if(name.equals("Theseus") && maxValue == Double.POSITIVE_INFINITY){
                 tempArray[1] = 1;
-                //Remove collected supply
-                for(int i = 0; i<supplyTileIds.size(); ++i){
-                    if(supplyTileIds.get(i) == board.getTiles()[currentPos].neighborTileId(maxValueDie, board.getN())){
-                        supplyTileIds.remove(i);
+                //Set obtainable false
+                for(int i = 0; i<playerMap.getS(); ++i){
+                    if(playerMap.getSupplies()[i].getSupplyTileId() == board.getTiles()[currentPos].neighborTileId(maxValueDie, board.getN())){
+                    	playerMap.getSupplies()[i].setObtainable(false);;
                         break;
                     }
                 }

@@ -33,7 +33,7 @@ public class Game {
 		Board board = new Board(N, S, W);
 		board.createBoard();
 		HeuristicPlayer[] gamers = new HeuristicPlayer[2];
-		gamers[0] = new HeuristicPlayer(1, "Theseus", board, 0, 0, 0, new ArrayList<>(n), 3, 3);
+		gamers[0] = new HeuristicPlayer(1, "Theseus", board, 0, 0, 0, new ArrayList<>(n), 3, 14);
 		gamers[1] = new HeuristicPlayer(2, "Minotaur", board, 0, N/2, N/2,  new ArrayList<>(n), 0, -1);
 		int winnerIdx = -1;
 		do{
@@ -102,11 +102,8 @@ public class Game {
 			}
 		}
 
-		Board map = new Board(N, S, W);
-		map.setTiles(gamers[0].getPlayerMap());
-		map.setSupplies(board.getSupplies());
 
-		String[][] repBoard = map.getStringRepresentation(0, N*N-1);
+		String[][] repBoard = gamers[0].getPlayerMap().getStringRepresentation(0, N*N/2);
 		for(int i = 0 ; i <= 2 * N ; i++) {
 			for(int j = 0;j <= N - 1 ; j++) {
 				System.out.print(repBoard[i][j]);
