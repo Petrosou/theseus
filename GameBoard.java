@@ -46,7 +46,7 @@ final class GameBoard extends Board {
 			//Up left
 			((GameTile)tiles[N*(N-1)]).setBuildRight(false);
 			((GameTile)tiles[N*(N-1)]).setBuildDown(false);
-			((GameTile)tiles[(N-1)*(N-1)]).setBuildUp(false);
+			((GameTile)tiles[N*(N-2)]).setBuildUp(false);
 			((GameTile)tiles[N*(N-1)+1]).setBuildLeft(false);
 			//Up right
 			((GameTile)tiles[N*N-1]).setBuildLeft(false);
@@ -208,7 +208,6 @@ final class GameBoard extends Board {
 		
 		//The inner walls
 		while (check<W) {
-			counter2 = counter1 = 0;
 			randomIndex = (int)(Math.random()*tiles.length);
 			randomDirection = (int)(Math.random()*2)*2 + 1;
 			
@@ -231,8 +230,8 @@ final class GameBoard extends Board {
 			((GameTile)neighbor).setBuildInDirection(oppositeDirection, false);
 			check++;
 			//Check if there is the maximum amount of walls allowed on tiles
-			
 			//Count walls on current tile
+			counter2 = counter1 = 0;
 			for(int i = 1; i<8; i+=2){
 				if(i == randomDirection) //We already know that there is a wall there
 					continue;
@@ -240,19 +239,28 @@ final class GameBoard extends Board {
 			}
 
 			//Count walls on neighbor tile
+			int adjacentTileId;
 			for(int i = 1; i<8; i+=2){
 				if(i == randomDirection + 4) //We already know that there is a wall there
 					continue;
 				counter2 = (neighbor.getWallInDirection(i))?(counter2 + 1):counter2;
 			}
-			if(counter1 == 1){
-				for(int i = 0; i<4; ++i){
-					((GameTile)tiles[randomIndex]).setBuildInDirection(2*i+1, false);
+			if(counter1 == maxWallsOnTile - 1){
+				for(int i = 1; i<8; i+=2){
+					oppositeDirection = (i == 1)?(5):(i == 5)?(1):(i == 3)?(7):(3);
+					((GameTile)tiles[randomIndex]).setBuildInDirection(i, false);
+					adjacentTileId = tiles[randomIndex].neighborTileId(i, N);
+					if(adjacentTileId>-1 && adjacentTileId<tiles.length)
+						((GameTile)tiles[adjacentTileId]).setBuildInDirection(oppositeDirection, false);
 				}
 			}
 			if(counter2 == maxWallsOnTile - 1){
-				for(int i = 0; i<4; ++i){
-					((GameTile)tiles[nId]).setBuildInDirection(2*i+1, false);
+				for(int i = 1; i<8; i+=2){
+					oppositeDirection = (i == 1)?(5):(i == 5)?(1):(i == 3)?(7):(3);
+					((GameTile)tiles[nId]).setBuildInDirection(i, false);
+					adjacentTileId = tiles[nId].neighborTileId(i, N);
+					if(adjacentTileId>-1 && adjacentTileId<tiles.length)
+						((GameTile)tiles[adjacentTileId]).setBuildInDirection(oppositeDirection, false);
 				}
 			}
 		}
