@@ -29,7 +29,7 @@ public class Game {
 	
 	public static void main(String[] args) {
 		Game game = new Game();
-		final int N = 15, S = 4, W = 190, n = 100;
+		final int N = 15, S = 4, W = 170, n = 100;
 		GameBoard board = new GameBoard(N, S, W);
 		board.createBoard();
 		HeuristicPlayer[] gamers = new HeuristicPlayer[2];
