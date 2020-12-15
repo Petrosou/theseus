@@ -29,12 +29,12 @@ public class Game {
 	
 	public static void main(String[] args) {
 		Game game = new Game();
-		final int N = 15, S = 4, W = 100 + (int)(Math.random()*60), n = 100;
-		Board board = new Board(N, S, W);
+		final int N = 15, S = 4, W = 190, n = 100;
+		GameBoard board = new GameBoard(N, S, W);
 		board.createBoard();
 		HeuristicPlayer[] gamers = new HeuristicPlayer[2];
-		gamers[0] = new HeuristicPlayer(1, "Theseus", board, 0, 0, 0, new ArrayList<>(n), 3, true);
-		gamers[1] = new HeuristicPlayer(2, "Minotaur", board, 0, N/2, N/2,  new ArrayList<>(n), 0, false);
+		gamers[0] = new HeuristicPlayer(1, "Theseus", board, 0, 0, 0, new ArrayList<>(n), 3, 0);
+		gamers[1] = new HeuristicPlayer(2, "Minotaur", board, 0, N/2, N/2,  new ArrayList<>(n), 0, -1);
 		int winnerIdx = -1;
 		do{
 
@@ -87,10 +87,10 @@ public class Game {
 			
 		}while(game.getRound() < n);		//n rounds -> 2n plays
 
-		gamers[0].statistics();
+		//gamers[0].statistics();
 
 		//Tie
-		if(game.getRound() == n && winnerIdx == -1) {
+		if(winnerIdx == -1) {
 			System.out.println("Out of moves! (Tie)");
 		}
 
