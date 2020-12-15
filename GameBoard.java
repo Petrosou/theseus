@@ -46,7 +46,7 @@ final class GameBoard extends Board {
 			//Up left
 			((GameTile)tiles[N*(N-1)]).setBuildRight(false);
 			((GameTile)tiles[N*(N-1)]).setBuildDown(false);
-			((GameTile)tiles[(N-1)*(N-1)]).setBuildUp(false);
+			((GameTile)tiles[N*(N-2)]).setBuildUp(false);
 			((GameTile)tiles[N*(N-1)+1]).setBuildLeft(false);
 			//Up right
 			((GameTile)tiles[N*N-1]).setBuildLeft(false);
