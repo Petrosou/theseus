@@ -1,12 +1,12 @@
 /**
-Σουλίδης Πέτρος 9971 petrosis@ece.auth.gr
-Τερζίδης Αλέξανδρος 10072 terzidisa@ece.auth.gr
-*/
+ * Soulidis Petros 9971 petrosis@ece.auth.gr
+ * Terzidis Alexandros 10072 terzidisa@ece.auth.gr
+ */
 
 public class Player {
 	protected int playerId;
 	protected String name;
-	protected Board board;
+	protected GameBoard board;
 	protected int score;
 	protected int x;
 	protected int y;
@@ -15,13 +15,13 @@ public class Player {
 	public Player() {
 		playerId = 0;
 		name = "";
-		board = new Board();
+		board = new GameBoard();
 		score = 0;
 		x = 0;
 		y = 0;
 	}
 	
-	public Player(int playerId, String name, Board board, int score, int x, int y) {
+	public Player(int playerId, String name, GameBoard board, int score, int x, int y) {
 		this.playerId = playerId;
 		this.name = name;
 		this.board = board;
@@ -39,7 +39,7 @@ public class Player {
 		return name;
 	}
 	
-	public Board getBoard() {
+	public GameBoard getBoard() {
 		return board;
 	}
 	
@@ -64,7 +64,7 @@ public class Player {
 		this.name = name;
 	}
 	
-	public void setBoard(Board board) {
+	public void setBoard(GameBoard board) {
 		this.board = board;
 	}
 	

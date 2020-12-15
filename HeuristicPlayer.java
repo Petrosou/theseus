@@ -1,30 +1,31 @@
 import java.util.ArrayList;
 class HeuristicPlayer extends Player{
+    //Variables
     private ArrayList<Integer[]> path;      //player moves' description [int die, int pickedSupply, int blocksToSupply, int blocksToOpponent, tileId]
     private int ability;
     private int wallAbility;
     private double revisitPenalty = 0.01;
     private double a = 0.01;
-    private Board playerMap;
+    private PlayerBoard playerMap;
 
+    //Constuctors
     HeuristicPlayer(){
         super();
         path = new ArrayList<>(0);
         ability = 3;
         wallAbility = 0;
-        playerMap = new Board();
+        playerMap = new PlayerBoard();
     }
-
-    HeuristicPlayer(int playerId, String name, Board board, int score, int x, int y, ArrayList<Integer[]> path, int ability, int wallAbility){
+    HeuristicPlayer(int playerId, String name, GameBoard board, int score, int x, int y, ArrayList<Integer[]> path, int ability, int wallAbility){
         super(playerId, name, board, score, x, y);
         this.path = path;
         this.ability = ability;
         this.wallAbility = wallAbility;
-        playerMap = new Board( board.getN(), board.getS(), board.getW());
+        playerMap = new PlayerBoard( board.getN(), board.getS(), board.getW());
 
         int N = playerMap.getN();
         for(int i = 0; i <= N * N - 1; i++){
-            playerMap.getTiles()[i] = new Tile(i, i/N, i%N, false, false, false, false);
+            playerMap.getTiles()[i] = new PlayerTile(i, i/N, i%N, false, false, false, false);
 			if(i / N == 0) {
 				playerMap.getTiles()[i].setDown(true);
 			}
@@ -43,6 +44,7 @@ class HeuristicPlayer extends Player{
         	playerMap.getSupplies()[i] = new Supply();
     }
 
+    //Getters setters
     public void setAbility(int ability){
         this.ability = ability;
     }
@@ -75,6 +77,7 @@ class HeuristicPlayer extends Player{
         return playerMap;
     }
 
+    //Special functions
     private int[] seeAround(int currentPos, int opponentPos, int die){
         int blocksToOpponent = Integer.MAX_VALUE, blocksToSupply = Integer.MAX_VALUE, blocksToWall = -1;
         int nId = currentPos;
@@ -107,7 +110,7 @@ class HeuristicPlayer extends Player{
             	}
             }
             if(!foundSupply) {
-        		playerMap.getTiles()[nId].setHasSupply(false);
+        		((PlayerTile)playerMap.getTiles()[nId]).setHasSupply(false);
         	}
              
             //Enough data collected
@@ -172,7 +175,7 @@ class HeuristicPlayer extends Player{
             int neighborTileId = board.getTiles()[currentPos].neighborTileId(die, board.getN());
             Tile neighbor = board.getTiles()[neighborTileId];
             for(int i = 0; i<playerMap.getTiles().length; ++i){
-            	if(playerMap.getTiles()[i].hasSupply())
+            	if(((PlayerTile)playerMap.getTiles()[i]).hasSupply())
             		continue;       
             penalty+=0.001/(neighbor.distance(playerMap.getTiles()[i])+1);
             }
