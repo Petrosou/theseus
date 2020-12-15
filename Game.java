@@ -87,7 +87,7 @@ public class Game {
 			
 		}while(game.getRound() < n);		//n rounds -> 2n plays
 
-		//gamers[0].statistics();
+		gamers[0].statistics();
 
 		//Tie
 		if(winnerIdx == -1) {

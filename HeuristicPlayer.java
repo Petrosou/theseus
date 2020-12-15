@@ -259,30 +259,30 @@ class HeuristicPlayer extends Player{
     }
 
     public void statistics(){
-        //System.out.println("\nStatistics of " + name + ":");
+        System.out.println("\nStatistics of " + name + ":");
         int ups, rights, downs, lefts, currentRound;
         ups = rights = downs = lefts = 0;
         for(int i = 0; i<path.size(); ++i){
             currentRound = i + 1;
             switch(path.get(i)[0]) {
                 case 1://case UP
-                    //System.out.println(name + " moved up in round " + currentRound + ".");
+                    System.out.println(name + " moved up in round " + currentRound + ".");
                     ++ups;
                     break;
                 case 3://case RIGHT
-                    //System.out.println(name + " moved right in round " + currentRound + ".");
+                    System.out.println(name + " moved right in round " + currentRound + ".");
                 ++rights;
                     break;
                 case 5://Case DOWN
-                    //System.out.println(name + " moved down in round " + currentRound + ".");
+                    System.out.println(name + " moved down in round " + currentRound + ".");
                 ++downs;
                     break;
                 case 7://Case LEFT
-                    //System.out.println(name + " moved left in round " + currentRound + ".");
+                    System.out.println(name + " moved left in round " + currentRound + ".");
                 ++lefts;
                     break;
                 default:
-                    //System.out.println("Some unexpected error happened in HeuristicPlayer-> void statistics()-> switch(path.get(i)[0])");
+                    System.out.println("Some unexpected error happened in HeuristicPlayer-> void statistics()-> switch(path.get(i)[0])");
                     java.lang.System.exit(1);
             }
 
@@ -300,12 +300,12 @@ class HeuristicPlayer extends Player{
             else
                 System.out.println("Supplies were not visible.");
             
-            //System.out.println();
+            System.out.println();
         }
-        //System.out.println(name + " tried to moved up a total of " + ups + " times.");
-        //System.out.println(name + " tried to moved right a total of " + rights + " times.");
-        //System.out.println(name + " tried to moved down a total of " + downs + " times.");
-        //System.out.println(name + " tried to moved left a total of " + lefts + " times.");
+        System.out.println(name + " tried to moved up a total of " + ups + " times.");
+        System.out.println(name + " tried to moved right a total of " + rights + " times.");
+        System.out.println(name + " tried to moved down a total of " + downs + " times.");
+        System.out.println(name + " tried to moved left a total of " + lefts + " times.");
 
     }
 
@@ -314,23 +314,23 @@ class HeuristicPlayer extends Player{
         details[3] = -1;
 		switch(die) {
 		case 1://case UP
-			//System.out.println(name + " rolled UP.");		
+			System.out.println(name + " rolled UP.");		
 			break;
 		case 3://case RIGHT
-			//System.out.println(name + " rolled RIGHT.");
+			System.out.println(name + " rolled RIGHT.");
 			break;
 		case 5://Case DOWN
-			//System.out.println(name + " rolled DOWN.");
+			System.out.println(name + " rolled DOWN.");
 			break;
 		case 7://Case LEFT
-			//System.out.println(name + " rolled LEFT.");
+			System.out.println(name + " rolled LEFT.");
 			break;
 		}
 		
 		//Valid move check
 		//Invalid
 		if(board.getTiles()[board.getN()*x+y].getWallInDirection(die)) {
-			//System.out.println(name + " cannot move that way.");
+			System.out.println(name + " cannot move that way.");
 			details[0] = board.getN()*x+y;
 			details[1] = board.getTiles()[board.getN()*x+y].getX();
 			details[2] = board.getTiles()[board.getN()*x+y].getY();
@@ -348,7 +348,7 @@ class HeuristicPlayer extends Player{
 		if(name.equals("Theseus")) {
 			for(int i = 0 ; i < board.getS() ; i++) {
 				if((details[0] == board.getSupplies()[i].getSupplyTileId())&&(board.getSupplies()[i].isObtainable())) {
-                    //System.out.println(name + " picked up supply " + board.getSupplies()[i].getSupplyId() + ".");
+                    System.out.println(name + " picked up supply " + board.getSupplies()[i].getSupplyId() + ".");
 					details[3] = i;
 					board.getSupplies()[i].setObtainable(false);
 					break;
