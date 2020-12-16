@@ -16,14 +16,13 @@ class HeuristicPlayer extends Player{
         wallAbility = 0;
         playerMap = new PlayerBoard();
     }
-    HeuristicPlayer(int playerId, String name, GameBoard board, int score, int x, int y, ArrayList<Integer[]> path, int ability, int wallAbility){
-        super(playerId, name, board, score, x, y);
+    HeuristicPlayer(int playerId, String name, int x, int y, int N, int S, ArrayList<Integer[]> path, int ability, int wallAbility){
+        super(playerId, name, x, y);
         this.path = path;
         this.ability = ability;
         this.wallAbility = wallAbility;
-        playerMap = new PlayerBoard( board.getN(), board.getS(), board.getW());
 
-        int N = playerMap.getN();
+        playerMap = new PlayerBoard(N, S);
         for(int i = 0; i <= N * N - 1; i++){
             playerMap.getTiles()[i] = new PlayerTile(i, i/N, i%N, false, false, false, false);
 			if(i / N == 0) {
@@ -54,7 +53,7 @@ class HeuristicPlayer extends Player{
     }
 
     public void setWallAbility(int wallAbility){
-        this.wallAbility = ability;
+        this.wallAbility = wallAbility;
     }
 
     public int getWallAbility(){
@@ -78,9 +77,9 @@ class HeuristicPlayer extends Player{
     }
 
     //Special functions
-    private int[] seeAround(int currentPos, int opponentPos, int die){
+    private int[] seeAround(RestrictedGameBoard board, int opponentPos, int die){
         int blocksToOpponent = Integer.MAX_VALUE, blocksToSupply = Integer.MAX_VALUE, blocksToWall = -1;
-        int nId = currentPos;
+        int nId = x*board.getN() + y;
         for(int i = 0; i<ability; ++i){
             //Interfering wall
             if(board.getTiles()[nId].getWallInDirection(die)) {
@@ -118,7 +117,7 @@ class HeuristicPlayer extends Player{
                 break;
         }
       //BlocksToWall
-        nId = currentPos;
+        nId = x*board.getN() + y;
         for(int i = 0; i<=wallAbility; ++i){
             //Interfering wall
             if(board.getTiles()[nId].getWallInDirection(die)) {
@@ -129,7 +128,7 @@ class HeuristicPlayer extends Player{
         }
         
         //Find the tileId of the tile with wall
-        nId = currentPos;
+        nId = x*board.getN() + y;
         for(int i = 0; i<blocksToWall; ++i) {
         	nId = board.getTiles()[nId].neighborTileId(die, board.getN());
         }
@@ -148,16 +147,16 @@ class HeuristicPlayer extends Player{
         return tempArray;
     }
     
-    public double evaluate(int currentPos, int opponentPos, int die){
-        int[] observation = seeAround(currentPos, opponentPos, die);
+    public double evaluate(RestrictedGameBoard board, int opponentPos, int die){
+        int[] observation = seeAround(board, opponentPos, die);
         int blocksToClosestSupply = Integer.MAX_VALUE;
         int blocksToOpponent = observation[1];
         int blocksToWall = observation[2];
         double penalty = 0;
 
         //Approach supplies
-        if(!board.getTiles()[currentPos].getWallInDirection(die)){
-            int neighborTileId = board.getTiles()[currentPos].neighborTileId(die, board.getN());
+        if(!board.getTiles()[x*board.getN() + y].getWallInDirection(die)){
+            int neighborTileId = board.getTiles()[x*board.getN() + y].neighborTileId(die, board.getN());
             Tile neighbor = board.getTiles()[neighborTileId];
             for(int i = 0; i<playerMap.getS(); ++i){
             	if(playerMap.getSupplies()[i].getSupplyTileId() == 0)
@@ -171,8 +170,8 @@ class HeuristicPlayer extends Player{
         }
         
          
-        if(!board.getTiles()[currentPos].getWallInDirection(die)){
-            int neighborTileId = board.getTiles()[currentPos].neighborTileId(die, board.getN());
+        if(!board.getTiles()[x*board.getN() + y].getWallInDirection(die)){
+            int neighborTileId = board.getTiles()[x*board.getN() + y].neighborTileId(die, board.getN());
             Tile neighbor = board.getTiles()[neighborTileId];
             for(int i = 0; i<playerMap.getTiles().length; ++i){
             	if(((PlayerTile)playerMap.getTiles()[i]).hasSupply())
@@ -184,7 +183,7 @@ class HeuristicPlayer extends Player{
         if(name.equals("Theseus")){
             //Avoid revisiting a tile
             for(int i = 0; i<path.size(); ++i){
-                if(path.get(i)[4] == board.getTiles()[currentPos].neighborTileId(die, board.getN())){
+                if(path.get(i)[4] == board.getTiles()[x*board.getN() + y].neighborTileId(die, board.getN())){
                     penalty+=revisitPenalty;
                 }
             }
@@ -228,27 +227,27 @@ class HeuristicPlayer extends Player{
     }
 
     //returns the move that has the greatest value
-    public int getNextMove(int currentPos, int opponentPos){
+    public int getNextMove( RestrictedGameBoard board, int opponentPos){
         double[] movesValues = new double[4];
         int randomDirection = 1 + 2 * ((int) (Math.random() * 10) % 4);
-        double maxValue = movesValues[randomDirection/2] = evaluate(currentPos, opponentPos, randomDirection);
+        double maxValue = movesValues[randomDirection/2] = evaluate(board, opponentPos, randomDirection);
         int maxValueDie = randomDirection;
         for(int i = 0; i<4; ++i){
             if(2*i+1 == randomDirection)
                 continue;
-            if(maxValue < (movesValues[i] = evaluate(currentPos, opponentPos, 2*i + 1))){
+            if(maxValue < (movesValues[i] = evaluate(board, opponentPos, 2*i + 1))){
                 maxValue = movesValues[i];
                 maxValueDie = 2*i + 1;
             }
         }
 
-        int[] observation = seeAround(currentPos, opponentPos, maxValueDie);
-        Integer[] tempArray = {maxValueDie, 0, observation[0] - 1, observation[1] - 1, currentPos};
+        int[] observation = seeAround(board, opponentPos, maxValueDie);
+        Integer[] tempArray = {maxValueDie, 0, observation[0] - 1, observation[1] - 1, board.getN()*x+y};
         if(name.equals("Theseus") && maxValue == Double.POSITIVE_INFINITY){
                 tempArray[1] = 1;
                 //Set obtainable false
                 for(int i = 0; i<playerMap.getS(); ++i){
-                    if(playerMap.getSupplies()[i].getSupplyTileId() == board.getTiles()[currentPos].neighborTileId(maxValueDie, board.getN())){
+                    if(playerMap.getSupplies()[i].getSupplyTileId() == board.getTiles()[board.getN()*x+y].neighborTileId(maxValueDie, board.getN())){
                     	playerMap.getSupplies()[i].setObtainable(false);;
                         break;
                     }
@@ -309,9 +308,10 @@ class HeuristicPlayer extends Player{
 
     }
 
-    public int[] move(int die) {
+    public int[] move(RestrictedGameBoard board, int opponentPos) {
 		int[] details = new int[4];
         details[3] = -1;
+        int die = getNextMove(board, opponentPos);
 		switch(die) {
 		case 1://case UP
 			System.out.println(name + " rolled UP.");		
@@ -338,8 +338,8 @@ class HeuristicPlayer extends Player{
 		//Valid
 		else {
 			details[0] = board.getTiles()[board.getN()*x+y].neighborTileId(die, board.getN());
-			details[1] = board.getTiles()[details[0]].getX();
-			details[2] = board.getTiles()[details[0]].getY();
+			details[1] = details[0]/board.getN();
+			details[2] = details[0]%board.getN();
 			setX(details[1]);
 			setY(details[2]);
 		}

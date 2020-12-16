@@ -15,7 +15,6 @@ final class GameBoard extends Board {
 	GameBoard(int N, int S, int W){
 		super(N, S, W);
 
-		tiles = new Tile[N*N];
 		for(int i = 0; i <= N * N - 1; i++)
 			tiles[i] = new GameTile(i, i/N, i%N, false, false, false, false);
 		visitedNodes = new ArrayList<>(0);
@@ -23,7 +22,7 @@ final class GameBoard extends Board {
 
 	// Special functions
 	@Override
-	protected void createOutline() {
+	protected void createOutline() { //for efficiency
 		super.createOutline();
 		for (int i = 0; i < N; ++i) {
 			((GameTile)tiles[i]).setBuildDown(false);

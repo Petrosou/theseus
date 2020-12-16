@@ -3,10 +3,8 @@ final class PlayerBoard extends Board{
 	PlayerBoard(){
 		super();
 	}
-	PlayerBoard(int N, int S, int W){
-		super(N, S, W);
-
-		tiles = new Tile[N*N];
+	PlayerBoard(int N, int S){
+		super(N, S, 0);
 		for(int i = 0; i <= N * N - 1; i++)
 			tiles[i] = new PlayerTile(i, i/N, i%N, false, false, false, false);
 	}

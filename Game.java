@@ -26,18 +26,31 @@ public class Game {
 		this.round = round;
 	}
 	
-	
+	//Special functions
+	static boolean canSeeOpponent(Player player, Player opponent, int N){
+		if(!(player instanceof HeuristicPlayer))
+			return false;
+		
+		int playerPos = player.getX()*N + player.getY();
+		int opponentPos = opponent.getX()*N + opponent.getY();
+		for(int i = 1; i<=((HeuristicPlayer)player).getAbility(); ++i) {
+				if(playerPos == opponentPos+i || playerPos == opponentPos-i || playerPos == opponentPos+N || playerPos == opponentPos-N)
+					return true;
+		}
+		
+		return false;
+	}
+
 	public static void main(String[] args) {
 		Game game = new Game();
-		final int N = 15, S = 4, W = 170, n = 100;
+		final int N = 15, S = 4, W = 100 + (int)(Math.random()*6), n = 100;
 		GameBoard board = new GameBoard(N, S, W);
 		board.createBoard();
 		HeuristicPlayer[] gamers = new HeuristicPlayer[2];
-		gamers[0] = new HeuristicPlayer(1, "Theseus", board, 0, 0, 0, new ArrayList<>(n), 3, 0);
-		gamers[1] = new HeuristicPlayer(2, "Minotaur", board, 0, N/2, N/2,  new ArrayList<>(n), 0, -1);
+		gamers[0] = new HeuristicPlayer(1, "Theseus", 0, 0, N, S, new ArrayList<>(n), 3, 3);
+		gamers[1] = new HeuristicPlayer(2, "Minotaur", N/2, N/2, N, S, new ArrayList<>(n), 0, -1);
 		int winnerIdx = -1;
 		do{
-
 			System.out.println("\n\n");
 			game.setRound(game.getRound() + 1);
 			System.out.println("\t\t" + gamers[0].getName() + "  " + gamers[0].getScore() + " - " + gamers[1].getScore() + "  " + gamers[1].getName() + "\n");
@@ -53,39 +66,45 @@ public class Game {
 			System.out.println("\n");
 
 			//Movements
-						
+			
 			//Theseus' turn
 
-			int die = gamers[0].getNextMove(N * gamers[0].getX() + gamers[0].getY(), N * gamers[1].getX() + gamers[1].getY());
-
 			//Check if a supply was collected
-			if(gamers[0].move(die)[3] != -1){
-				gamers[0].setScore(gamers[0].getScore() + 1);
+			if(canSeeOpponent(gamers[0], gamers[1], N)) {
+				if(gamers[0].move(new RestrictedGameBoard(board, gamers[0]), gamers[1].getX()*N + gamers[1].getY())[3] != -1){
+					gamers[0].setScore(gamers[0].getScore() + 1);
+				}
 			}
-
+			else {
+				if(gamers[0].move(new RestrictedGameBoard(board, gamers[0]), -1)[3] != -1){
+					gamers[0].setScore(gamers[0].getScore() + 1);
+				}
+			}
 			//Check if all supplies were collected
 			if(gamers[0].getScore() == board.getS()){
 				winnerIdx = 0;
 				break;
 			}
-						
-						//Check if Theseus ran into Minotaur
+			
+			//Check if Theseus ran into Minotaur
 			if(gamers[0].getX() == gamers[1].getX() && gamers[0].getY()==gamers[1].getY()) {
 				winnerIdx = 1;
 				break;
 			}
-						
+			
 			//Minotaur's turn
-			die = gamers[1].getNextMove(N * gamers[1].getX() + gamers[1].getY(), N * gamers[0].getX() + gamers[0].getY());
-			gamers[1].move(die);
+			if(canSeeOpponent(gamers[1], gamers[0], N))
+				gamers[1].move(new RestrictedGameBoard(board, gamers[1]), gamers[0].getX()*N + gamers[0].getY());
+			else
+				gamers[1].move(new RestrictedGameBoard(board, gamers[1]), -1);
 
 			//Check if Minotaur ran into Theseus
 			if(gamers[0].getX() == gamers[1].getX() && gamers[0].getY() == gamers[1].getY()) {
 				winnerIdx = 1;
 				break;
-			}
-			
+			}	
 		}while(game.getRound() < n);		//n rounds -> 2n plays
+
 
 		gamers[0].statistics();
 

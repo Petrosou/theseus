@@ -6,7 +6,6 @@
 public class Player {
 	protected int playerId;
 	protected String name;
-	protected GameBoard board;
 	protected int score;
 	protected int x;
 	protected int y;
@@ -15,19 +14,17 @@ public class Player {
 	public Player() {
 		playerId = 0;
 		name = "";
-		board = new GameBoard();
 		score = 0;
 		x = 0;
 		y = 0;
 	}
 	
-	public Player(int playerId, String name, GameBoard board, int score, int x, int y) {
+	public Player(int playerId, String name, int x, int y) {
 		this.playerId = playerId;
 		this.name = name;
-		this.board = board;
-		this.score = score;
 		this.x = x;
 		this.y = y;
+		score = 0;
 	}
 	
 	//getters
@@ -39,9 +36,6 @@ public class Player {
 		return name;
 	}
 	
-	public GameBoard getBoard() {
-		return board;
-	}
 	
 	public int getScore() {
 		return score;
@@ -64,10 +58,6 @@ public class Player {
 		this.name = name;
 	}
 	
-	public void setBoard(GameBoard board) {
-		this.board = board;
-	}
-	
 	public void setScore(int score) {
 		this.score = score;
 	}
@@ -81,21 +71,21 @@ public class Player {
 	}
 	
 	
-	public int[] move(int id) {
+	public int[] move(RestrictedGameBoard board) {
 		int[] details = new int[4];
 		details[3] = -1;
 		int randomDirection = 1 + 2 * ((int) (Math.random() * 10) % 4);
 		switch(randomDirection) {
 		case 1://case UP
 			System.out.println(name + " rolled UP.");
-			if(board.getTiles()[id].getUp()) {
+			if(board.getTiles()[board.N*x+y].getUp()) {
 				System.out.println(name + " cannot move up.");
-				details[0] = id;
-				details[1] = board.getTiles()[id].getX();
-				details[2] = board.getTiles()[id].getY();
+				details[0] = board.N*x+y;
+				details[1] = board.getTiles()[board.N*x+y].getX();
+				details[2] = board.getTiles()[board.N*x+y].getY();
 				break;
 			}
-			details[0] = id + board.getN();
+			details[0] = board.N*x+y + board.getN();
 			details[1] = board.getTiles()[details[0]].getX();
 			details[2] = board.getTiles()[details[0]].getY();
 			setX(details[1]);
@@ -114,15 +104,15 @@ public class Player {
 			break;
 		case 3://case RIGHT
 			System.out.println(name + " rolled RIGHT.");
-			if(board.getTiles()[id].getRight()) {
+			if(board.getTiles()[board.N*x+y].getRight()) {
 				System.out.println(name + " cannot move right.");
-				details[0] = id;
-				details[1] = board.getTiles()[id].getX();
-				details[2] = board.getTiles()[id].getY();
+				details[0] = board.N*x+y;
+				details[1] = board.getTiles()[board.N*x+y].getX();
+				details[2] = board.getTiles()[board.N*x+y].getY();
 				break;
 			}
 			
-			details[0] = id + 1;
+			details[0] = board.N*x+y + 1;
 			details[1] = board.getTiles()[details[0]].getX();
 			details[2] = board.getTiles()[details[0]].getY();
 			setX(details[1]);
@@ -141,15 +131,15 @@ public class Player {
 			break;
 		case 5://Case DOWN
 			System.out.println(name + " rolled DOWN.");
-			if(board.getTiles()[id].getDown()) {
+			if(board.getTiles()[board.N*x+y].getDown()) {
 				System.out.println(name + " cannot move down.");
-				details[0] = id;
-				details[1] = board.getTiles()[id].getX();
-				details[2] = board.getTiles()[id].getY();
+				details[0] = board.N*x+y;
+				details[1] = board.getTiles()[board.N*x+y].getX();
+				details[2] = board.getTiles()[board.N*x+y].getY();
 				break;
 			}
 			
-			details[0] = id - board.getN();
+			details[0] = board.N*x+y - board.getN();
 			details[1] = board.getTiles()[details[0]].getX();
 			details[2] = board.getTiles()[details[0]].getY();
 			setX(details[1]);
@@ -168,15 +158,15 @@ public class Player {
 			break;
 		case 7://Case LEFT
 			System.out.println(name + " rolled LEFT.");
-			if(board.getTiles()[id].getLeft()) {
+			if(board.getTiles()[board.N*x+y].getLeft()) {
 				System.out.println(name + " cannot move left.");
-				details[0] = id;
-				details[1] = board.getTiles()[id].getX();
-				details[2] = board.getTiles()[id].getY();
+				details[0] = board.N*x+y;
+				details[1] = board.getTiles()[board.N*x+y].getX();
+				details[2] = board.getTiles()[board.N*x+y].getY();
 				break;
 			}
 			
-			details[0] = id - 1;
+			details[0] = board.N*x+y - 1;
 			details[1] = board.getTiles()[details[0]].getX();
 			details[2] = board.getTiles()[details[0]].getY();
 			setX(details[1]);

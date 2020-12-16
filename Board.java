@@ -1,5 +1,5 @@
 /**
- * Ξ£ΞΏΟ…Ξ»Ξ―Ξ΄Ξ·Ο‚ Ξ Ξ­Ο„ΟΞΏΟ‚ 9971 petrosis@ece.auth.gr Ξ¤ΞµΟΞ¶Ξ―Ξ΄Ξ·Ο‚ Ξ‘Ξ»Ξ­ΞΎΞ±Ξ½Ξ΄ΟΞΏΟ‚ 10072
+ * Σουλίδης Πέτρος 9971 petrosis@ece.auth.gr Τερζίδης Αλέξανδρος 10072
  * terzidisa@ece.auth.gr
  */
 abstract class Board {
@@ -20,7 +20,9 @@ abstract class Board {
 		this.N = N;
 		this.S = S;
 		this.W = W;
-		
+
+		tiles = new Tile[N*N];
+
 		supplies = new Supply[S];
 		for(int i = 0; i<S; ++i)
 			supplies[i] = new Supply();
@@ -68,7 +70,21 @@ abstract class Board {
 			tiles[i * N + N - 1].setRight(true);
 		}
 	}
-	public abstract void empty();
+	public void empty(){
+		for(int i = 0 ; i < (N*N); i++){
+			for(int j = 0; j<4; ++j){
+				tiles[i].setWallInDirection(2*j+1, false);
+			}
+		}
+		for(int i = 0; i<S; ++i){
+			supplies[i].setSupplyId(0);
+			supplies[i].setSupplyTileId(0);
+			supplies[i].setX(0);
+			supplies[i].setY(0);
+			supplies[i].setObtainable(false);
+		}
+		createOutline();
+	}
 	public String[][] getStringRepresentation(int theseusTile, int minotaurTile){
 		String[][] theBoard = new String[2 * N + 1][N];
 		int line = 0;
