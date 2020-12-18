@@ -131,6 +131,6 @@ public class MinMaxPlayer extends HeuristicPlayer {
                 }
         }
         path.add(tempArray);
-        return super.move(board, opponentPos);
+        return super.move(board, selectedMove);
     }
 }

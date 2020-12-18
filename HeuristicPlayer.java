@@ -155,7 +155,7 @@ class HeuristicPlayer extends Player{
         }
         
          
-/*        if(!board.getTiles()[x*board.getN() + y].getWallInDirection(die)){
+        /*if(!board.getTiles()[x*board.getN() + y].getWallInDirection(die)){
             int neighborTileId = board.getTiles()[x*board.getN() + y].neighborTileId(die, board.getN());
             Tile neighbor = board.getTiles()[neighborTileId];
             for(int i = 0; i<playerMap.getTiles().length; ++i){
@@ -293,10 +293,9 @@ class HeuristicPlayer extends Player{
 
     }
 
-    public int[] move(RestrictedGameBoard board, int opponentPos) {
+    public int[] move(RestrictedGameBoard board, int die) {
 		int[] details = new int[4];
         details[3] = -1;
-        int die = getNextMove(board, opponentPos);
 		switch(die) {
 		case 1://case UP
 			System.out.println(name + " rolled UP.");		
