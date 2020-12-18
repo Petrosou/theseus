@@ -48,7 +48,7 @@ public class Game {
 		board.createBoard();
 		MinMaxPlayer[] gamers = new MinMaxPlayer[2];
 		gamers[0] = new MinMaxPlayer(1, "Theseus", 0, 0, N, S, new ArrayList<>(n), 3, 3);
-		gamers[1] = new MinMaxPlayer(2, "Minotaur", N/2, N/2, N, S, new ArrayList<>(n), 3, -1);
+		gamers[1] = new MinMaxPlayer(2, "Minotaur", N/2, N/2, N, S, new ArrayList<>(n), 3, 0);
 		int winnerIdx = -1;
 		do{
 			System.out.println("\n\n");
@@ -56,14 +56,14 @@ public class Game {
 			System.out.println("\t\t" + gamers[0].getName() + "  " + gamers[0].getScore() + " - " + gamers[1].getScore() + "  " + gamers[1].getName() + "\n");
 			System.out.println("\t\t\tRound " + game.getRound());
 
-			//Board representation
+			/*//Board representation
 			String[][] repBoard = board.getStringRepresentation(N * gamers[0].getX() + gamers[0].getY(), N * gamers[1].getX() + gamers[1].getY());
 			for(int i = 0 ; i <= 2 * N ; i++) {
 				for(int j = 0;j <= N - 1 ; j++) {
 					System.out.print(repBoard[i][j]);
 				}
 			}
-			System.out.println("\n");
+			System.out.println("\n");*/
 
 			//Movements
 			
@@ -106,7 +106,7 @@ public class Game {
 		}while(game.getRound() < n);		//n rounds -> 2n plays
 
 
-		gamers[0].statistics();
+		//gamers[0].statistics();
 
 		//Tie
 		if(winnerIdx == -1) {
