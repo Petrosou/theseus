@@ -7,8 +7,22 @@ final class PlayerBoard extends Board{
 		super(N, S, 0);
 		for(int i = 0; i <= N * N - 1; i++)
 			tiles[i] = new PlayerTile(i, i/N, i%N, false, false, false, false);
+		createOutline();
 	}
-	
+	PlayerBoard(PlayerBoard board){
+		super(board.N, board.S, board.W);
+		this.N = board.N;
+		this.W = board.W;
+		this.S = board.S;
+
+		for(int i = 0; i <= N * N - 1; i++){
+			tiles[i] = new PlayerTile((PlayerTile)board.tiles[i]);
+		}
+		for(int i = 0; i<S; ++i){
+			supplies[i] = new Supply(board.supplies[i]);
+		}
+	}
+
 	//Special functions
 	public void empty(){
 		for(int i = 0 ; i < (N*N); i++){

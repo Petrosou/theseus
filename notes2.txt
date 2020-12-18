@@ -1,0 +1,105 @@
+Δέντρο(currentPos, opponentPos, root, depth){ //Θεωρούμε ότι ο κόμβος έχει αρχικοποιηθεί ή
+    root.children = new ArrayList<>(4);
+    αρχικοποίηση παιδιών του κόμβου
+            πρώτο παιδί (die 1)
+                αρχικοποίηση παιδιού
+                    depth = root.depth + 1;
+                    parent = root;
+                    nodeMove[2] = die;
+                αρχικοποίηση του νέου παίκτη 
+                    (Η θέση του παίκτη που δημιουργούμε αλλάζει σε κάθε κόμβο)
+                    Για βάθος 2 δεν αλλάζουμε το path.
+                αξιολόγηση της κίνησης die του παίκτη με θέση αντιπάλου opponentPos και στο ταμπλό του root
+                    πρέπει να λαμβάνεται από τον παίκτη που φτιάξαμε!!!
+                    nodeEvaluation του παιδιού = player.evaluate(die, opponentPos, currentPos, nodeBoard root)
+                φτιάχνω αντίγραφο του ταμπλό και μετακινώ τον παίκτη με κίνηση die
+                    Λαμβάνω υπόψιν τα εφόδια, εάν πάρθηκε κάποιο το κάνω unobtainable. 
+                    Πρέπει η τροποποιημένη συνάρτηση κίνησης να λαμβάνει υπόψη ποιος είναι ο Μινώταυρος και ποιος ο Θησέας
+                nodeMove[0],[1] ίσες με τις καινούριες συντεταγμένες του παίκτη
+                ελέγχεται εάν στην κίνηση τελειώνει το παιχνίδι, αλλιώς ***εάν γνωρίζω τη θέση του αντιπάλου***:
+                    κλήση συνάρτησης ΔέντροΑντιπάλου(τρέχουσα θέση νέου παίκτη(τοπικού), opponentPos, παιδί 1, depth+1, αξιολόγηση πρώτου παιδιού)
+            δεύτερο παιδί (die 3)
+                ...
+            τρίτο παιδί (die 5)
+                ...
+            τέταρτο παιδί (die 7)
+                ...
+            τέλος βρόγχου
+τέλος συνάρτησης
+
+ΔέντροΑντιπάλου(currentPos, opponentPos, parent, depth, parentEval){
+    parent.children = new ArrayList<>(4);
+    αρχικοποίηση παιδιών του κόμβου
+        πρώτο παιδί (die 1)
+            αρχικοποίηση παιδιού
+                depth = parent.depth + 1;
+                parent = parent;
+                nodeMove = die;
+                children = null;
+            αρχικοποίηση νέου παίκτη
+            αξιολόγηση της κίνησης die του παίκτη με θέση αντιπάλου opponentPos και στο ταμπλό του parent
+                Πρέπει να λαμβάνεται από τον παίκτη που μόλις φτιάξαμε!!
+                nodeEvaluation του παιδιού = parentEval - evaluate(die, opponentPos, currentPos, nodeBoard parent) <-αξιολόγηση του αντιπάλου μας
+            φτιάχνω αντίγραφο του ταμπλό και μετακινώ τον παίκτη με κίνηση die
+                Λαμβάνω υπόψιν τα εφόδια, εάν πάρθηκε κάποιο το κάνω unobtainable.
+                
+            nodeMove[0],[1] ίσες με τις καινούριες συντεταγμένες του παίκτη
+            
+            δεύτερο παιδί (die 3)
+                ...
+            τρίτο παιδί (die 5)
+                ...
+            τέταρτο παιδί (die 7)
+                ...
+            τέλος βρόγχου
+τέλος συνάρτησης
+}
+
+double evaluate(int currentPos, int opponentPos, int die, PlayerBoard nodeBoard){
+    fakePlayer = new HeuristicPlayer
+    fakePlayer.playerMap = nodeboard;
+    int observation = fakePlayer.seeAround();
+    return fakePlayer.evaluate();
+}
+
+void makeMove(PlayerBoard board, int die){//"fake move"
+    if(!board.getTiles()[board.getN()*x+y].getWallInDirection(die)) {
+        setX(board.getTiles()[board.getN()*x+y].neighborTileId(die, board.getN())/board.getN());
+        setY(board.getTiles()[board.getN()*x+y].neighborTileId(die, board.getN())%board.getN());        
+    }
+    if(name.equals("Theseus")) {
+		for(int i = 0 ; i < board.getS() ; i++) {
+			if((board.getTiles()[board.getN()*x+y].neighborTileId(die, board.getN()) == board.getSupplies()[i].getSupplyTileId())&&(board.getSupplies()[i].isObtainable())) {
+				board.getSupplies()[i].setObtainable(false);
+				break;
+			}
+		}
+	}
+}
+
+int chooseMinMaxMove(Node root){
+    //MinMax αλγόριθμος
+    double opponentEval = 0;
+    double myEval = 0;
+    double maxDiff = Integer.Min_Value;
+    int move = -1;
+    for(int i = 0 ;  i < 4 ; i++){
+        myEval = root.childen.get(i).nodeEvaluation();
+        if(root.getChildren().get(i).children == null)
+            continue;
+        for(int j = 0 ; j < 4 ; i++){//Υπάρχει περίπτωση το παιχνίδι να τελειώνει στο 1ο επίπεδο
+            opponentEval = root.getChildren().get(i).getChildren().get(j).nodeEvaluation();
+            if(maxDiff < Myeval - opponentEval)
+                maxDiff = Myeval - opponentEval;
+                move = i;
+        }
+        return move;
+    }
+    
+
+int[] getNextMove (int currentPos, int opponentCurrentPos){
+    root, 1,..)
+    int selectedMove = chooseMinMaxMove(Node root);
+    move(selectedMove);
+    update path;
+}

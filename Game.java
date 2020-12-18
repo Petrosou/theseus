@@ -28,12 +28,12 @@ public class Game {
 	
 	//Special functions
 	static boolean canSeeOpponent(Player player, Player opponent, int N){
-		if(!(player instanceof HeuristicPlayer))
+		if(!(player instanceof MinMaxPlayer))
 			return false;
 		
 		int playerPos = player.getX()*N + player.getY();
 		int opponentPos = opponent.getX()*N + opponent.getY();
-		for(int i = 1; i<=((HeuristicPlayer)player).getAbility(); ++i) {
+		for(int i = 1; i<=((MinMaxPlayer)player).getAbility(); ++i) {
 				if(playerPos == opponentPos+i || playerPos == opponentPos-i || playerPos == opponentPos+N || playerPos == opponentPos-N)
 					return true;
 		}
@@ -46,9 +46,9 @@ public class Game {
 		final int N = 15, S = 4, W = 100 + (int)(Math.random()*6), n = 100;
 		GameBoard board = new GameBoard(N, S, W);
 		board.createBoard();
-		HeuristicPlayer[] gamers = new HeuristicPlayer[2];
-		gamers[0] = new HeuristicPlayer(1, "Theseus", 0, 0, N, S, new ArrayList<>(n), 3, 3);
-		gamers[1] = new HeuristicPlayer(2, "Minotaur", N/2, N/2, N, S, new ArrayList<>(n), 0, -1);
+		MinMaxPlayer[] gamers = new MinMaxPlayer[2];
+		gamers[0] = new MinMaxPlayer(1, "Theseus", 0, 0, N, S, new ArrayList<>(n), 3, 3);
+		gamers[1] = new MinMaxPlayer(2, "Minotaur", N/2, N/2, N, S, new ArrayList<>(n), 0, -1);
 		int winnerIdx = -1;
 		do{
 			System.out.println("\n\n");

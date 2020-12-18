@@ -1,12 +1,12 @@
 import java.util.ArrayList;
 class HeuristicPlayer extends Player{
     //Variables
-    private ArrayList<Integer[]> path;      //player moves' description [int die, int pickedSupply, int blocksToSupply, int blocksToOpponent, tileId]
-    private int ability;
-    private int wallAbility;
-    private double revisitPenalty = 0.01;
-    private double a = 0.01;
-    private PlayerBoard playerMap;
+    protected ArrayList<Integer[]> path;      //player moves' description [int die, int pickedSupply, int blocksToSupply, int blocksToOpponent, tileId, opponentTileId]
+    protected int ability;
+    protected int wallAbility;
+    protected double revisitPenalty = 0.01;
+    protected double a = 0.01;
+    protected PlayerBoard playerMap;
 
     //Constuctors
     HeuristicPlayer(){
@@ -23,22 +23,6 @@ class HeuristicPlayer extends Player{
         this.wallAbility = wallAbility;
 
         playerMap = new PlayerBoard(N, S);
-        for(int i = 0; i <= N * N - 1; i++){
-            playerMap.getTiles()[i] = new PlayerTile(i, i/N, i%N, false, false, false, false);
-			if(i / N == 0) {
-				playerMap.getTiles()[i].setDown(true);
-			}
-			else if(i / N == N - 1) {
-				playerMap.getTiles()[i].setUp(true);
-			}
-			
-			if(i % N == 0) {
-				playerMap.getTiles()[i].setLeft(true);
-			}
-			else if(i % N == N - 1) {
-				playerMap.getTiles()[i].setRight(true);
-			}
-		}
         for(int i = 0; i<playerMap.getS(); ++i)
         	playerMap.getSupplies()[i] = new Supply();
     }
@@ -77,12 +61,13 @@ class HeuristicPlayer extends Player{
     }
 
     //Special functions
-    private int[] seeAround(RestrictedGameBoard board, int opponentPos, int die){
+    protected int[] seeAround(Board board, int opponentPos, int die){
         int blocksToOpponent = Integer.MAX_VALUE, blocksToSupply = Integer.MAX_VALUE, blocksToWall = -1;
         int nId = x*board.getN() + y;
         for(int i = 0; i<ability; ++i){
             //Interfering wall
             if(board.getTiles()[nId].getWallInDirection(die)) {
+                playerMap.tiles[nId].setWallInDirection(die, true);
                 break;
             }
             nId = board.getTiles()[nId].neighborTileId(die, board.getN());
@@ -147,7 +132,7 @@ class HeuristicPlayer extends Player{
         return tempArray;
     }
     
-    public double evaluate(RestrictedGameBoard board, int opponentPos, int die){
+    public double evaluate(Board board, int opponentPos, int die){
         int[] observation = seeAround(board, opponentPos, die);
         int blocksToClosestSupply = Integer.MAX_VALUE;
         int blocksToOpponent = observation[1];
@@ -170,15 +155,15 @@ class HeuristicPlayer extends Player{
         }
         
          
-        if(!board.getTiles()[x*board.getN() + y].getWallInDirection(die)){
+/*        if(!board.getTiles()[x*board.getN() + y].getWallInDirection(die)){
             int neighborTileId = board.getTiles()[x*board.getN() + y].neighborTileId(die, board.getN());
             Tile neighbor = board.getTiles()[neighborTileId];
             for(int i = 0; i<playerMap.getTiles().length; ++i){
-            	if(((PlayerTile)playerMap.getTiles()[i]).hasSupply())
+            	if(((PlayerTile)playerMap.getTiles()[i]).haveInfo())
             		continue;       
             penalty+=0.001/(neighbor.distance(playerMap.getTiles()[i])+1);
             }
-        }
+        }*/
 
         if(name.equals("Theseus")){
             //Avoid revisiting a tile
@@ -227,7 +212,7 @@ class HeuristicPlayer extends Player{
     }
 
     //returns the move that has the greatest value
-    public int getNextMove( RestrictedGameBoard board, int opponentPos){
+    public int getNextMove(RestrictedGameBoard board, int opponentPos){
         double[] movesValues = new double[4];
         int randomDirection = 1 + 2 * ((int) (Math.random() * 10) % 4);
         double maxValue = movesValues[randomDirection/2] = evaluate(board, opponentPos, randomDirection);
@@ -242,7 +227,7 @@ class HeuristicPlayer extends Player{
         }
 
         int[] observation = seeAround(board, opponentPos, maxValueDie);
-        Integer[] tempArray = {maxValueDie, 0, observation[0] - 1, observation[1] - 1, board.getN()*x+y};
+        Integer[] tempArray = {maxValueDie, 0, observation[0] - 1, observation[1] - 1, board.getN()*x+y, opponentPos};
         if(name.equals("Theseus") && maxValue == Double.POSITIVE_INFINITY){
                 tempArray[1] = 1;
                 //Set obtainable false

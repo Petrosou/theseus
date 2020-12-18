@@ -1,26 +1,26 @@
 final class PlayerTile extends Tile{
 	//Variables
-	private boolean hasSupply;
+	private boolean haveInfo;
 
 	//Constructors
 	PlayerTile(){
 		super();
-		hasSupply = true;
+		haveInfo = true;
 	}
 	PlayerTile(int tileId, int x, int y, boolean up, boolean down, boolean left, boolean right){
 		super(tileId, x, y, up, down, left, right);
-		hasSupply = true;
+		haveInfo = true;
 	}
 	PlayerTile(PlayerTile tile){
 		super(tile);
-		hasSupply = tile.hasSupply();
+		haveInfo = tile.haveInfo();
 	}
 	
 	//Gettets-setters
-	public boolean hasSupply() {
-		return hasSupply;
+	public boolean haveInfo() {
+		return haveInfo;
 	}
-	public void setHasSupply(boolean hasSupply) {
-		this.hasSupply = hasSupply;
+	public void setHasSupply(boolean haveInfo) {
+		this.haveInfo = haveInfo;
 	}
 }
