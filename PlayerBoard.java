@@ -2,11 +2,13 @@ final class PlayerBoard extends Board{
 	//Constructors
 	PlayerBoard(){
 		super();
+		createOutline();
 	}
 	PlayerBoard(int N, int S){
 		super(N, S, 0);
 		for(int i = 0; i <= N * N - 1; i++)
 			tiles[i] = new PlayerTile(i, i/N, i%N, false, false, false, false);
+		createOutline();
 	}
 	
 	//Special functions
