@@ -5,11 +5,11 @@ final class PlayerTile extends Tile{
 	//Constructors
 	PlayerTile(){
 		super();
-		haveInfo = true;
+		haveInfo = false;
 	}
 	PlayerTile(int tileId, int x, int y, boolean up, boolean down, boolean left, boolean right){
 		super(tileId, x, y, up, down, left, right);
-		haveInfo = true;
+		haveInfo = false;
 	}
 	PlayerTile(PlayerTile tile){
 		super(tile);
@@ -20,7 +20,7 @@ final class PlayerTile extends Tile{
 	public boolean haveInfo() {
 		return haveInfo;
 	}
-	public void setHasSupply(boolean haveInfo) {
+	public void setHaveInfo(boolean haveInfo) {
 		this.haveInfo = haveInfo;
 	}
 }

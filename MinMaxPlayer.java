@@ -19,11 +19,18 @@ public class MinMaxPlayer extends HeuristicPlayer {
         int S = nodeBoard.getS();
         HeuristicPlayer fakePlayer = new HeuristicPlayer(playerId, name, currentPos/N, currentPos%N, N, S, new ArrayList<>(0), N, N);
         fakePlayer.playerMap = nodeBoard;
+        fakePlayer.path = path;
         return fakePlayer.evaluate(nodeBoard, opponentPos, die);
     }
 
-    void createMySubtree(int opponentPos, Node root, int depth){
+    void createMySubtree(RestrictedGameBoard board, int opponentPos, Node root, int depth){
         root.children = new ArrayList<Node>(4);
+
+        //Update playerMap
+        if(root.nodeDepth == 0){
+            for(int i = 0; i<4; ++i)
+                seeAround(board, opponentPos, 2*i+1);
+        }
         
         //Form child
         for(int i = 0 ; i < 4; i++) {
@@ -98,14 +105,15 @@ public class MinMaxPlayer extends HeuristicPlayer {
                     maxDiff = myEval;
                     move = 2*i+1;
                 }
+                System.out.println(maxDiff);
                 continue;
             }
             for(int j = 0 ; j < 4 ; j++){//Υπάρχει περίπτωση το παιχνίδι να τελειώνει στο 1ο επίπεδο
                 opponentEval = root.children.get(i).children.get(j).nodeEvaluation;
-            }
-            if(maxDiff < myEval - opponentEval){
-                maxDiff = myEval - opponentEval;
-                move = 2*i+1;
+                if(maxDiff < myEval - opponentEval){
+                    maxDiff = myEval - opponentEval;
+                    move = 2*i+1;
+                }
             }
         }
         return move;
@@ -114,7 +122,7 @@ public class MinMaxPlayer extends HeuristicPlayer {
     public int[] move(RestrictedGameBoard board, int opponentPos){
         Node root = new Node();
         root.nodeBoard = playerMap;
-        createMySubtree(opponentPos, root, 1);
+        createMySubtree(board, opponentPos, root, 1);
         int selectedMove = chooseMinMaxMove(root);
 
         //update path

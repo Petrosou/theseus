@@ -65,37 +65,37 @@ class HeuristicPlayer extends Player{
         int blocksToOpponent = Integer.MAX_VALUE, blocksToSupply = Integer.MAX_VALUE, blocksToWall = -1;
         int nId = x*board.getN() + y;
         for(int i = 0; i<ability; ++i){
+            //Out of bounds
+            if(nId<0 || nId >= board.tiles.length)
+                break;
             //Interfering wall
             if(board.getTiles()[nId].getWallInDirection(die)) {
                 playerMap.tiles[nId].setWallInDirection(die, true);
                 break;
             }
             nId = board.getTiles()[nId].neighborTileId(die, board.getN());
+            if(board instanceof RestrictedGameBoard)
+                ((PlayerTile)playerMap.tiles[nId]).setHaveInfo(true);
             //Opponent
             if(opponentPos == nId){
                 blocksToOpponent = i + 1;
             }
 
             //Supply
-            boolean foundSupply = false;
             for(int j = 0;  j<board.getS(); ++j) {
-            	if(nId == board.getSupplies()[j].getSupplyTileId()) {
-            		foundSupply = true;
+            	if(nId == board.getSupplies()[j].getSupplyTileId() && board.getSupplies()[j].isObtainable()) {
             		playerMap.getSupplies()[j].setSupplyId(j+1);
             		playerMap.getSupplies()[j].setX(board.getTiles()[nId].getX());
             		playerMap.getSupplies()[j].setY(board.getTiles()[nId].getY());
             		playerMap.getSupplies()[j].setSupplyTileId(nId);
-            		if(board.getSupplies()[j].isObtainable() ) {
-            			playerMap.getSupplies()[j].setObtainable(true);
-		                if(blocksToSupply == Integer.MAX_VALUE){
-		                    blocksToSupply = i + 1;
-		                }
-            		}
+                    playerMap.getSupplies()[j].setObtainable(true);
+                    ((PlayerTile)playerMap.tiles[nId]).setHaveInfo(false); //Falsely set
+                    if(blocksToSupply == Integer.MAX_VALUE){
+                        blocksToSupply = i + 1;
+                    }
             	}
             }
-            if(!foundSupply) {
-        		((PlayerTile)playerMap.getTiles()[nId]).setHasSupply(false);
-        	}
+
              
             //Enough data collected
             if(blocksToOpponent != Integer.MAX_VALUE && blocksToSupply != Integer.MAX_VALUE)
@@ -105,7 +105,10 @@ class HeuristicPlayer extends Player{
         nId = x*board.getN() + y;
         for(int i = 0; i<=wallAbility; ++i){
             //Interfering wall
-            if(board.getTiles()[nId].getWallInDirection(die)) {
+            if(nId<0 || nId >= board.tiles.length){
+                break;
+            }
+            if(board.getTiles()[nId].getWallInDirection(die)){
                 blocksToWall = i;
                 break;
             }
@@ -140,28 +143,29 @@ class HeuristicPlayer extends Player{
         double penalty = 0;
 
         //Approach supplies
-        if(!board.getTiles()[x*board.getN() + y].getWallInDirection(die)){
-            int neighborTileId = board.getTiles()[x*board.getN() + y].neighborTileId(die, board.getN());
-            Tile neighbor = board.getTiles()[neighborTileId];
-            for(int i = 0; i<playerMap.getS(); ++i){
-            	if(playerMap.getSupplies()[i].getSupplyTileId() == 0)
-            		continue;
-            	Tile supplyTile = playerMap.getTiles()[playerMap.getSupplies()[i].getSupplyTileId()];
-            	if(board.getSupplies()[i].isObtainable()) {
-            		if(blocksToClosestSupply>neighbor.distance(supplyTile) + 1)
-            			blocksToClosestSupply = neighbor.distance(supplyTile) + 1;
-            	}
+        //Out of bounds
+        if(x*board.getN() + y > 0 && x*board.getN() + y < board.tiles.length)
+            if(!board.getTiles()[x*board.getN() + y].getWallInDirection(die)){
+                int neighborTileId = board.getTiles()[x*board.getN() + y].neighborTileId(die, board.getN());
+                Tile neighbor = board.getTiles()[neighborTileId];
+                for(int i = 0; i<playerMap.getS(); ++i){
+                    if(playerMap.getSupplies()[i].getSupplyTileId() == 0)
+                        continue;
+                    Tile supplyTile = playerMap.getTiles()[playerMap.getSupplies()[i].getSupplyTileId()];
+                    if(board.getSupplies()[i].isObtainable()) {
+                        if(blocksToClosestSupply>neighbor.distance(supplyTile) + 1)
+                            blocksToClosestSupply = neighbor.distance(supplyTile) + 1;
+                    }
+                }
             }
-        }
         
          
         /*if(!board.getTiles()[x*board.getN() + y].getWallInDirection(die)){
             int neighborTileId = board.getTiles()[x*board.getN() + y].neighborTileId(die, board.getN());
             Tile neighbor = board.getTiles()[neighborTileId];
             for(int i = 0; i<playerMap.getTiles().length; ++i){
-            	if(((PlayerTile)playerMap.getTiles()[i]).haveInfo())
-            		continue;       
-            penalty+=0.001/(neighbor.distance(playerMap.getTiles()[i])+1);
+            	if(((PlayerTile)playerMap.getTiles()[i]).haveInfo())      
+                    penalty+=0.001*(neighbor.distance(playerMap.getTiles()[i])+1);
             }
         }*/
 
@@ -171,6 +175,8 @@ class HeuristicPlayer extends Player{
                 if(path.get(i)[4] == board.getTiles()[x*board.getN() + y].neighborTileId(die, board.getN())){
                     penalty+=revisitPenalty;
                 }
+                else
+                    System.out.println(path.get(i)[4]);
             }
             ////Special case MS
             if(blocksToOpponent == 1 && blocksToClosestSupply == 1){
