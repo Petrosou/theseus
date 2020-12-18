@@ -48,7 +48,7 @@ public class Game {
 		board.createBoard();
 		MinMaxPlayer[] gamers = new MinMaxPlayer[2];
 		gamers[0] = new MinMaxPlayer(1, "Theseus", 0, 0, N, S, new ArrayList<>(n), 3, 3);
-		gamers[1] = new MinMaxPlayer(2, "Minotaur", N/2, N/2, N, S, new ArrayList<>(n), 3, 0);
+		gamers[1] = new MinMaxPlayer(2, "Minotaur", N/2, N/2, N, S, new ArrayList<>(n), 0, 0);
 		int winnerIdx = -1;
 		do{
 			System.out.println("\n\n");

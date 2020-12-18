@@ -44,7 +44,7 @@ public class MinMaxPlayer extends HeuristicPlayer {
             //player movement simulation
             MinMaxPlayer player = new MinMaxPlayer(playerId, name, x, y, root.nodeBoard.getN(), root.nodeBoard.getS(), path, ability, wallAbility);
             root.children.get(i).nodeEvaluation = player.evaluate(player.getX()*root.nodeBoard.getN()+player.getY(), opponentPos, 2*i+1, root.children.get(i).nodeBoard);
-            
+            //System.out.println(root.children.get(i).nodeEvaluation);
 			player.makeMove(root.children.get(i).nodeBoard, 2*i+1, root);
             root.children.get(i).nodeMove[0] = player.getX();
             root.children.get(i).nodeMove[1] = player.getY();
@@ -127,12 +127,12 @@ public class MinMaxPlayer extends HeuristicPlayer {
         //update path
         int[] observation = seeAround(board, opponentPos, selectedMove);
         Integer[] tempArray = {selectedMove, 0, observation[0] - 1, observation[1] - 1, board.getN()*x+y, opponentPos};
-        if(name.equals("Theseus") && selectedMove == Double.POSITIVE_INFINITY){
+        if(name.equals("Theseus") && root.children.get(selectedMove/2).nodeEvaluation == Double.POSITIVE_INFINITY){
                 tempArray[1] = 1;
                 //Set obtainable false
                 for(int i = 0; i<playerMap.getS(); ++i){
                     if(playerMap.getSupplies()[i].getSupplyTileId() == board.getTiles()[board.getN()*x+y].neighborTileId(selectedMove, board.getN())){
-                    	playerMap.getSupplies()[i].setObtainable(false);;
+                    	playerMap.getSupplies()[i].setObtainable(false);
                         break;
                     }
                 }

@@ -158,14 +158,14 @@ class HeuristicPlayer extends Player{
         }
         
          
-        /*if(!board.getTiles()[x*board.getN() + y].getWallInDirection(die)){
+        if(!board.getTiles()[x*board.getN() + y].getWallInDirection(die)){
             int neighborTileId = board.getTiles()[x*board.getN() + y].neighborTileId(die, board.getN());
             Tile neighbor = board.getTiles()[neighborTileId];
             for(int i = 0; i<playerMap.getTiles().length; ++i){
-            	if(((PlayerTile)playerMap.getTiles()[i]).haveInfo())      
-                    penalty+=0.001*(neighbor.distance(playerMap.getTiles()[i])+1);
+            	if(!((PlayerTile)playerMap.getTiles()[i]).haveInfo())      
+                    penalty+=0.00001*Math.pow((neighbor.distance(playerMap.getTiles()[i])+1), 0.05);
             }
-        }*/
+        }
 
         if(name.equals("Theseus")){
             //Avoid revisiting a tile
