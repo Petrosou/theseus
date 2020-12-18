@@ -175,8 +175,6 @@ class HeuristicPlayer extends Player{
                 if(path.get(i)[4] == board.getTiles()[x*board.getN() + y].neighborTileId(die, board.getN())){
                     penalty+=revisitPenalty;
                 }
-                else
-                    System.out.println(path.get(i)[4]);
             }
             ////Special case MS
             if(blocksToOpponent == 1 && blocksToClosestSupply == 1){
