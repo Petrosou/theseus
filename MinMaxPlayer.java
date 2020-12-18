@@ -105,7 +105,6 @@ public class MinMaxPlayer extends HeuristicPlayer {
                     maxDiff = myEval;
                     move = 2*i+1;
                 }
-                System.out.println(maxDiff);
                 continue;
             }
             for(int j = 0 ; j < 4 ; j++){//Υπάρχει περίπτωση το παιχνίδι να τελειώνει στο 1ο επίπεδο
