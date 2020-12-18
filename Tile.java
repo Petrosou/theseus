@@ -1,18 +1,17 @@
-/**
-Σουλίδης Πέτρος 9971 petrosis@ece.auth.gr
-Τερζίδης Αλέξανδρος 10072 terzidisa@ece.auth.gr
-*/
 
-public class Tile {
-	private int tileId;
-	private int x;
-	private int y;
-	private boolean up;
-	private boolean down;
-	private boolean left;
-	private boolean right;
+
+abstract class Tile {
+	//Variables
+	protected int tileId;
+	protected int x;
+	protected int y;
+	protected boolean up;
+	protected boolean down;
+	protected boolean left;
+	protected boolean right;
 	
-	public Tile() {
+	//Constuctors
+	Tile() {
 		tileId = 0;
 		x = 0;
 		y = 0;
@@ -21,8 +20,7 @@ public class Tile {
 		left = false;
 		right = false;
 	}
-	
-	public Tile(int tileId, int x, int y, boolean up, boolean down, boolean left, boolean right) {
+	Tile(int tileId, int x, int y, boolean up, boolean down, boolean left, boolean right) {
 		this.tileId = tileId;
 		this.x = x;
 		this.y = y;
@@ -30,9 +28,8 @@ public class Tile {
 		this.down = down;
 		this.left = left;
 		this.right = right;
-	}
-	
-	public Tile(Tile theTile) {
+	}	
+	Tile(Tile theTile) {
 		tileId = theTile.getTileId();
 		x = theTile.getX();
 		y = theTile.getY();
@@ -42,59 +39,46 @@ public class Tile {
 		right = theTile.getRight();
 	}
 	
+	//Getters-setters
 	public int getTileId() {
 		return tileId;
-	}
-	
+	}	
 	public int getX() {
 		return x;
-	}
-	
+	}	
 	public int getY() {
 		return y;
 	}
-	
 	public boolean getUp() {
 		return up;
-	}	
-	
+	}		
 	public boolean getDown() {
 		return down;
-	}
-	
+	}	
 	public boolean getLeft() {
 		return left;
-	}
-	
-	
+	}		
 	public boolean getRight() {
 		return right;
-	}
-	
+	}	
 	public void setTileId(int tileId) {
 		this.tileId = tileId;
 	}
-	
 	public void setX(int x) {
 		this.x = x;
-	}
-	
+	}	
 	public void setY(int y) {
 		this.y = y;
-	}
-	
+	}	
 	public void setUp(boolean up) {
 		this.up = up;
-	}
-	
+	}	
 	public void setDown(boolean down) {
 		this.down = down;
-	}
-	
+	}	
 	public void setLeft(boolean left) {
 		this.left = left;
-	}
-	
+	}	
 	public void setRight(boolean right) {
 		this.right = right;
 	}
@@ -114,8 +98,7 @@ public class Tile {
     			System.out.println("Invalid argument for die: " + die);
     			return -1;
     	}
-    }
-    
+    }    
     public boolean getWallInDirection(int die){
     	switch(die) {
 		case 1:
@@ -129,6 +112,24 @@ public class Tile {
 		default:
 			System.out.println("Invalid argument for die: " + die);
 			return false;
+		}
 	}
-    }
+	public void setWallInDirection(int die, boolean set){
+	switch(die){
+		case 1:
+			setUp(set);
+			break;
+		case 3:
+			setRight(set);
+			break;
+		case 5:
+			setDown(set);
+			break;
+		case 7:
+			setLeft(set);
+	}
+}
+	public int distance(Tile tile){
+		return Math.abs(x-tile.x) + Math.abs(y-tile.y);
+	}
 }
