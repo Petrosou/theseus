@@ -46,17 +46,13 @@ public class MinMaxPlayer extends HeuristicPlayer {
             //player movement simulation
             MinMaxPlayer player = new MinMaxPlayer(playerId, name, x, y, root.nodeBoard.getN(), root.nodeBoard.getS(), path, ability, wallAbility);
             root.children.get(i).nodeEvaluation = player.evaluate(player.getX()*root.nodeBoard.getN()+player.getY(), opponentPos, 2*i+1, root.children.get(i).nodeBoard);
-			player.makeMove(root.children.get(i).nodeBoard, 2*i+1, root);
+            boolean gameEnded = player.supplyOnMove(root.children.get(i).nodeBoard, opponentPos, 2*i+1, root);
             root.children.get(i).nodeMove[0] = player.getX();
             root.children.get(i).nodeMove[1] = player.getY();
-            
-            //check if game ends
-            //opponent child nodes
-            if(opponentPos != -1){
+            if(!gameEnded && opponentPos!=-1){
 			    createOpponentSubtree(player.getX()*root.nodeBoard.getN()+player.getY(), opponentPos, root.children.get(i), root.children.get(i).nodeDepth, root.children.get(i).nodeEvaluation);
-            }   
-        }
-        
+            }
+        }   
     }
     void createOpponentSubtree(int currentPos, int opponentPos, Node parent, int depth, double parentEval){
         parent.children = new ArrayList<Node>(4);
@@ -74,13 +70,13 @@ public class MinMaxPlayer extends HeuristicPlayer {
             player.setY(opponentPos%parent.nodeBoard.getN());
             parent.children.get(i).nodeEvaluation = parentEval - player.evaluate(opponentPos, currentPos, 2*i+1, parent.children.get(i).nodeBoard);
 
-            player.makeMove(parent.children.get(i).nodeBoard, 2*i+1, parent.children.get(i));
+            player.supplyOnMove(parent.children.get(i).nodeBoard, opponentPos, 2*i+1, parent.children.get(i));
             parent.children.get(i).nodeMove[0] = player.getX();
             parent.children.get(i).nodeMove[1] = player.getY();
         }
     }
     
-    void makeMove(PlayerBoard board, int die, Node root){
+    boolean supplyOnMove(PlayerBoard board, int opponentPos, int die, Node root){
         if(!board.getTiles()[board.getN()*root.nodeMove[0]+root.nodeMove[1]].getWallInDirection(die)) {
             setX(board.getTiles()[root.nodeMove[0]+root.nodeMove[1]].neighborTileId(die, board.getN())/board.getN());
             setY(board.getTiles()[root.nodeMove[0]+root.nodeMove[1]].neighborTileId(die, board.getN())%board.getN());        
@@ -89,10 +85,15 @@ public class MinMaxPlayer extends HeuristicPlayer {
             for(int i = 0 ; i < board.getS() ; i++) {
                 if((board.getTiles()[root.nodeMove[0]+root.nodeMove[1]].neighborTileId(die, board.getN()) == board.getSupplies()[i].getSupplyTileId())&&(board.getSupplies()[i].isObtainable())) {
                     board.getSupplies()[i].setObtainable(false);
+                    if(score == root.nodeBoard.S-1)
+                        return true;
                     break;
                 }
             }
-        }        
+        }
+        if(root.nodeMove[0]*root.nodeBoard.N + root.nodeMove[1] == opponentPos)
+            return true;
+        return false;        
     }
 
     int chooseMinMaxMove(Node root){
