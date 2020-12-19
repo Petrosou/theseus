@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class MinMaxPlayer extends HeuristicPlayer {
     int height = 2;
@@ -44,15 +46,15 @@ public class MinMaxPlayer extends HeuristicPlayer {
             //player movement simulation
             MinMaxPlayer player = new MinMaxPlayer(playerId, name, x, y, root.nodeBoard.getN(), root.nodeBoard.getS(), path, ability, wallAbility);
             root.children.get(i).nodeEvaluation = player.evaluate(player.getX()*root.nodeBoard.getN()+player.getY(), opponentPos, 2*i+1, root.children.get(i).nodeBoard);
-            //System.out.println(root.children.get(i).nodeEvaluation);
 			player.makeMove(root.children.get(i).nodeBoard, 2*i+1, root);
             root.children.get(i).nodeMove[0] = player.getX();
             root.children.get(i).nodeMove[1] = player.getY();
             
             //check if game ends
             //opponent child nodes
-            if(opponentPos != -1)
+            if(opponentPos != -1){
 			    createOpponentSubtree(player.getX()*root.nodeBoard.getN()+player.getY(), opponentPos, root.children.get(i), root.children.get(i).nodeDepth, root.children.get(i).nodeEvaluation);
+            }   
         }
         
     }
@@ -70,7 +72,7 @@ public class MinMaxPlayer extends HeuristicPlayer {
             MinMaxPlayer player = new MinMaxPlayer();
             player.setX(opponentPos/parent.nodeBoard.getN());
             player.setY(opponentPos%parent.nodeBoard.getN());
-            parent.children.get(i).nodeEvaluation = player.evaluate(opponentPos, currentPos, 2*i+1, parent.children.get(i).nodeBoard);
+            parent.children.get(i).nodeEvaluation = parentEval - player.evaluate(opponentPos, currentPos, 2*i+1, parent.children.get(i).nodeBoard);
 
             player.makeMove(parent.children.get(i).nodeBoard, 2*i+1, parent.children.get(i));
             parent.children.get(i).nodeMove[0] = player.getX();
@@ -98,22 +100,22 @@ public class MinMaxPlayer extends HeuristicPlayer {
         double myEval = 0;
         double maxDiff = Double.NEGATIVE_INFINITY;
         int move = -1;
+        double[] minOfLeaves = new double[4];
         for(int i = 0 ;  i < 4 ; i++){
             myEval = root.children.get(i).nodeEvaluation;
-            if(root.children.get(i).children == null){
-                if(maxDiff < myEval){
-                    maxDiff = myEval;
-                    move = 2*i+1;
+            for(int j = 0; j<4; j++){
+                if(root.children.get(i).children != null){
+                    minOfLeaves[i] = root.children.get(i).children.get(j).nodeEvaluation;
                 }
-                continue;
-            }
-            for(int j = 0 ; j < 4 ; j++){//Υπάρχει περίπτωση το παιχνίδι να τελειώνει στο 1ο επίπεδο
-                opponentEval = root.children.get(i).children.get(j).nodeEvaluation;
-                if(maxDiff < myEval - opponentEval){
-                    maxDiff = myEval - opponentEval;
-                    move = 2*i+1;
+                else{
+                    minOfLeaves[i] = root.children.get(i).nodeEvaluation;
                 }
             }
+            if(maxDiff < minOfLeaves[i]){
+                maxDiff = minOfLeaves[i];
+                move = 2*i+1;
+            }
+            
         }
         return move;
     }
