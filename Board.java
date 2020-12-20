@@ -1,5 +1,5 @@
 /**
- * Σουλίδης Πέτρος 9971 petrosis@ece.auth.gr Τερζίδης Αλέξανδρος 10072
+ * Ξ£ΞΏΟ…Ξ»Ξ―Ξ΄Ξ·Ο‚ Ξ Ξ­Ο„ΟΞΏΟ‚ 9971 petrosis@ece.auth.gr Ξ¤ΞµΟΞ¶Ξ―Ξ΄Ξ·Ο‚ Ξ‘Ξ»Ξ­ΞΎΞ±Ξ½Ξ΄ΟΞΏΟ‚ 10072
  * terzidisa@ece.auth.gr
  */
 abstract class Board {

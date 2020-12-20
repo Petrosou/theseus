@@ -27,18 +27,30 @@ public class Game {
 	}
 	
 	//Special functions
-	static boolean canSeeOpponent(Player player, Player opponent, int N){
+	static boolean canSeeOpponent(Player player, Player opponent, Board board){
 		if(!(player instanceof MinMaxPlayer))
 			return false;
-		
-		int playerPos = player.getX()*N + player.getY();
-		int opponentPos = opponent.getX()*N + opponent.getY();
-		for(int i = 1; i<=((MinMaxPlayer)player).getAbility(); ++i) {
-				if(playerPos == opponentPos+i || playerPos == opponentPos-i || playerPos == opponentPos+N || playerPos == opponentPos-N)
-					return true;
+		int playerPos = player.getX()*board.getN() + player.getY();
+		int opponentPos = opponent.getX()*board.getN() + opponent.getY();
+		int nId;
+		int ability = ((MinMaxPlayer)player).getAbility();
+		int blocksToOpponent = Integer.MAX_VALUE;
+		for(int die = 1; die<8; die+=2){
+			nId = playerPos;
+			for(int i = 0; i<ability; ++i){
+				//Interfering wall
+				if(board.getTiles()[nId].getWallInDirection(die)) {
+					((MinMaxPlayer)player).playerMap.tiles[nId].setWallInDirection(die, true);
+					break;
+				}
+				nId = board.getTiles()[nId].neighborTileId(die, board.getN());
+				//Opponent
+				if(opponentPos == nId){
+					blocksToOpponent = i + 1;
+				}
+			}
 		}
-		
-		return false;
+			return (blocksToOpponent == Integer.MAX_VALUE)?false:true;
 	}
 
 	public static void main(String[] args) {
@@ -70,7 +82,7 @@ public class Game {
 			//Theseus' turn
 
 			//Check if a supply was collected
-			if(canSeeOpponent(gamers[0], gamers[1], N)) {
+			if(canSeeOpponent(gamers[0], gamers[1], board)) {
 				if(gamers[0].move(new RestrictedGameBoard(board, gamers[0]), gamers[1].getX()*N + gamers[1].getY())[3] != -1){
 					gamers[0].setScore(gamers[0].getScore() + 1);
 				}
@@ -93,7 +105,7 @@ public class Game {
 			}
 			
 			//Minotaur's turn
-			if(canSeeOpponent(gamers[1], gamers[0], N))
+			if(canSeeOpponent(gamers[1], gamers[0], board))
 				gamers[1].move(new RestrictedGameBoard(board, gamers[1]), gamers[0].getX()*N + gamers[0].getY());
 			else
 				gamers[1].move(new RestrictedGameBoard(board, gamers[1]), -1);

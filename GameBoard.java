@@ -17,7 +17,6 @@ final class GameBoard extends Board {
 
 		for(int i = 0; i <= N * N - 1; i++)
 			tiles[i] = new GameTile(i, i/N, i%N, false, false, false, false);
-		createOutline();
 		visitedNodes = new ArrayList<>(0);
 	}
 
@@ -203,6 +202,8 @@ final class GameBoard extends Board {
 		int counter1, counter2;			//number of walls on a tile
 		int check = 0;			//number of inner walls currently built
 		int randomIndex, randomDirection;
+
+		createOutline();
 		
 		//The inner walls
 		while (check<W) {
