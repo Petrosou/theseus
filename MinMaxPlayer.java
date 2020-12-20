@@ -47,7 +47,7 @@ public class MinMaxPlayer extends HeuristicPlayer {
             //player movement simulation
             MinMaxPlayer player = new MinMaxPlayer(playerId, name, x, y, root.nodeBoard.getN(), root.nodeBoard.getS(), path, ability, wallAbility);
             root.children.get(i).nodeEvaluation = player.evaluate(player.getX()*root.nodeBoard.getN()+player.getY(), opponentPos, 2*i+1, root.children.get(i).nodeBoard);
-            boolean gameEnded = player.endGameMove(root.children.get(i).nodeBoard, opponentPos, 2*i+1, root);
+            boolean gameEnded = player.endGameMove(player, opponentPos, 2*i+1, root);
             root.children.get(i).nodeMove[0] = player.getX();
             root.children.get(i).nodeMove[1] = player.getY();
             
@@ -65,8 +65,8 @@ public class MinMaxPlayer extends HeuristicPlayer {
             parent.children.get(i).nodeMove[2] = 2*i+1;
             parent.children.get(i).children = null;
             parent.children.get(i).nodeBoard = parent.nodeBoard;
-            parent.children.get(i).nodeMove[0] = parent.nodeMove[0];
-            parent.children.get(i).nodeMove[1] = parent.nodeMove[1];
+            parent.children.get(i).nodeMove[0] = opponentPos/parent.nodeBoard.getN();
+            parent.children.get(i).nodeMove[1] = opponentPos%parent.nodeBoard.getN();
 
 
             //opponent movement simulation
@@ -75,17 +75,17 @@ public class MinMaxPlayer extends HeuristicPlayer {
             player.setY(opponentPos%parent.nodeBoard.getN());
             parent.children.get(i).nodeEvaluation = parentEval - player.evaluate(opponentPos, currentPos, 2*i+1, parent.children.get(i).nodeBoard);
 
-            player.endGameMove(parent.children.get(i).nodeBoard, opponentPos, 2*i+1, parent.children.get(i));
+            player.endGameMove(player, opponentPos, 2*i+1, parent.children.get(i));
             parent.children.get(i).nodeMove[0] = player.getX();
             parent.children.get(i).nodeMove[1] = player.getY();
         }
     }
     
-    boolean endGameMove(PlayerBoard board, int opponentPos, int die, Node root){
-        
+    boolean endGameMove(MinMaxPlayer player, int opponentPos, int die, Node root){
+        PlayerBoard board = root.nodeBoard;
         if(!board.getTiles()[board.getN()*root.nodeMove[0]+root.nodeMove[1]].getWallInDirection(die)) {
-            setX(board.getTiles()[root.nodeMove[0]*board.getN()+root.nodeMove[1]].neighborTileId(die, board.getN())/board.getN());
-            setY(board.getTiles()[root.nodeMove[0]*board.getN()+root.nodeMove[1]].neighborTileId(die, board.getN())%board.getN());        
+            player.setX(board.getTiles()[root.nodeMove[0]*board.getN()+root.nodeMove[1]].neighborTileId(die, board.getN()));
+            player.setY(board.getTiles()[root.nodeMove[0]*board.getN()+root.nodeMove[1]].neighborTileId(die, board.getN()));        
         }
         if(name.equals("Theseus")) {
             for(int i = 0 ; i < board.getS() ; i++) {
