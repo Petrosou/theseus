@@ -41,6 +41,8 @@ public class MinMaxPlayer extends HeuristicPlayer {
             root.children.get(i).nodeMove[2] = 2*i+1;
             root.children.get(i).children = null;
             root.children.get(i).nodeBoard = root.nodeBoard;
+            root.children.get(i).nodeMove[0] = root.nodeMove[0];
+            root.children.get(i).nodeMove[1] = root.nodeMove[1];
 
             //player movement simulation
             MinMaxPlayer player = new MinMaxPlayer(playerId, name, x, y, root.nodeBoard.getN(), root.nodeBoard.getS(), path, ability, wallAbility);
@@ -48,6 +50,7 @@ public class MinMaxPlayer extends HeuristicPlayer {
             boolean gameEnded = player.endGameMove(root.children.get(i).nodeBoard, opponentPos, 2*i+1, root);
             root.children.get(i).nodeMove[0] = player.getX();
             root.children.get(i).nodeMove[1] = player.getY();
+            
             if(!gameEnded && opponentPos!=-1){
 			    createOpponentSubtree(player.getX()*root.nodeBoard.getN()+player.getY(), opponentPos, root.children.get(i), root.children.get(i).nodeDepth, root.children.get(i).nodeEvaluation);
             }
@@ -62,7 +65,10 @@ public class MinMaxPlayer extends HeuristicPlayer {
             parent.children.get(i).nodeMove[2] = 2*i+1;
             parent.children.get(i).children = null;
             parent.children.get(i).nodeBoard = parent.nodeBoard;
-            
+            parent.children.get(i).nodeMove[0] = parent.nodeMove[0];
+            parent.children.get(i).nodeMove[1] = parent.nodeMove[1];
+
+
             //opponent movement simulation
             MinMaxPlayer player = new MinMaxPlayer();
             player.setX(opponentPos/parent.nodeBoard.getN());
@@ -76,9 +82,10 @@ public class MinMaxPlayer extends HeuristicPlayer {
     }
     
     boolean endGameMove(PlayerBoard board, int opponentPos, int die, Node root){
+        
         if(!board.getTiles()[board.getN()*root.nodeMove[0]+root.nodeMove[1]].getWallInDirection(die)) {
-            setX(board.getTiles()[root.nodeMove[0]+root.nodeMove[1]].neighborTileId(die, board.getN())/board.getN());
-            setY(board.getTiles()[root.nodeMove[0]+root.nodeMove[1]].neighborTileId(die, board.getN())%board.getN());        
+            setX(board.getTiles()[root.nodeMove[0]*board.getN()+root.nodeMove[1]].neighborTileId(die, board.getN())/board.getN());
+            setY(board.getTiles()[root.nodeMove[0]*board.getN()+root.nodeMove[1]].neighborTileId(die, board.getN())%board.getN());        
         }
         if(name.equals("Theseus")) {
             for(int i = 0 ; i < board.getS() ; i++) {
@@ -120,6 +127,8 @@ public class MinMaxPlayer extends HeuristicPlayer {
     public int[] move(RestrictedGameBoard board, int opponentPos){
         Node root = new Node();
         root.nodeBoard = playerMap;
+        root.nodeMove[0] = getX();
+        root.nodeMove[1] = getY();
         createMySubtree(board, opponentPos, root, 1);
         int selectedMove = chooseMinMaxMove(root);
 
